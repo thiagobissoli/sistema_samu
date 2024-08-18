@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+    <h2>Listagem de Ncps</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data e Hora</th>
+                <th>Descrição</th>
+                <th>Status</th>
+                <!-- ... outros cabeçalhos de coluna ... -->
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ncp in ncps %}
+            <tr>
+                <td>{{ ncp.id }}</td>
+                <td>{{ ncp.data_hora_registro }}</td>
+                <td>{{ ncp.descricao }}</td>
+                <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Analisando pelo coordenador'), ('2', 'Concluído Análise'), ('3', 'Arquivado'), ('4', 'Encaminhado ao gestor compedente de outra instituição')], ncp.status) }}</td>
+                <!-- ... outros campos ... -->
+                <td>
+                    <a href="{{ url_for('edit_ncps_coordenador', id=ncp.id) }}" class="btn btn-warning">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

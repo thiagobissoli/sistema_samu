@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Tarefa{% endblock %}
+
+{% block content %}
+<section class="content-header">
+  <div class="container-fluid">
+    <div class="row mb-2">
+      <div class="col-sm-6">
+        <h1>Editar Tarefa</h1>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="card card-default">
+      <div class="card-header">
+        <h3 class="card-title">Editar Tarefa</h3>
+      </div>
+      <div class="card-body">
+        <form id="edit-task-form" action="{{ url_for('kanban.edit_task', task_id=task.id) }}" method="post">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            {{ form.title.label }}
+            {{ form.title(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.description.label }}
+            {{ form.description(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.responsible_id.label }}
+            {{ form.responsible_id(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.requester_id.label }}
+            {{ form.requester_id(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.due_date.label }}
+            {{ form.due_date(class="form-control", type="datetime-local") }}
+          </div>
+          <div class="form-group">
+            {{ form.priority.label }}
+            {{ form.priority(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.submit(class="btn btn-success") }}
+            <a href="{{ url_for('kanban.view_project', project_id=task.column.project_id) }}" class="btn btn-primary">Voltar</a>
+            <button type="button" class="btn btn-danger" id="delete-task-button">Deletar</button>
+          </div>
+        </form>
+
+        <!-- Formulário oculto para deletar a tarefa -->
+        <form id="delete-task-form" action="{{ url_for('kanban.delete_task', task_id=task.id) }}" method="post" style="display:none;">
+          {{ form.hidden_tag() }}
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.getElementById('delete-task-button').addEventListener('click', function() {
+    if (confirm('Tem certeza que deseja deletar esta tarefa?')) {
+      document.getElementById('delete-task-form').submit();
+    }
+  });
+</script>
+{% endblock %}

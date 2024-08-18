@@ -1,0 +1,107 @@
+{% extends "base_ncps.html" %}
+
+{% block content %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+    <!-- Mensagem Flash Modal -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="modal fade" id="flashModal" tabindex="-1" role="dialog" aria-labelledby="flashModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="flashModalLabel">Mensagem</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for category, message in messages %}
+                                <p class="{{ category }}">{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Aciona o modal automaticamente quando a página é carregada -->
+            <script>
+                $(document).ready(function() {
+                    $("#flashModal").modal('show');
+                });
+            </script>
+        {% endif %}
+    {% endwith %}
+
+    <h2>Registrar Ncps</h2>
+    </br>
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <div class="form-row">
+            <div class="form-group col-md-4">
+            {{ form.data_hora_registro.label }}
+            {{ form.data_hora_registro(type="datetime-local", class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                {{ form.descricao.label }}
+                {{ form.descricao(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.local.label }}
+                {{ form.local(class="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form.id_ocorrencia.label }}
+                {{ form.id_ocorrencia(class="form-control") }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form.data_hora_ocorrencia.label }}
+                {{ form.data_hora_ocorrencia(type="datetime-local", class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                {{ form.sugestao.label }}
+                {{ form.sugestao(class="form-control") }}
+            </div>
+        </div>
+
+        <input type="hidden", value="0", id="dano", name="dano">
+        <input type="hidden", value="0", id="classificacao_incidente", name="classificacao_incidente">
+        <input type="hidden", value="0", id="procedente", name="procedente">
+        <input type="hidden", value="0", id="macroprocesso", name="macroprocesso">
+        <input type="hidden", value="0", id="seguranca", name="seguranca">
+        <input type="hidden", value="0", id="sentinela", name="sentinela">
+        <input type="hidden", value="0", id="impacto", name="impacto">
+        <input type="hidden", value="0", id="probabilidade", name="probabilidade">
+        <input type="hidden", value="0", id="controle", name="controle">
+        <input type="hidden", value="0", id="causa", name="causa">
+        <input type="hidden", value="0", id="plano", name="plano">
+        <input type="hidden", value="0", id="acao", name="acao">
+        <input type="hidden", value="0", id="status", name="status">
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+            <button type="submit" class="btn btn-primary col-md-3">Salvar</button>
+            <a href="#" class="btn btn-secondary col-md-3">Cancelar</a>
+            </div>
+        </div>
+
+    </form>
+{% endblock %}

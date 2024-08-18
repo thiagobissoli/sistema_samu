@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar NCPS{% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Registrar NCPS</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Adicionar Novo NCPS</h3>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.data_hora_registro.label }}
+                                {{ form.data_hora_registro(type="datetime-local", class="form-control", readonly=True) }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ form.descricao.label }}
+                                {{ form.descricao(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.local.label }}
+                                {{ form.local(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.id_ocorrencia.label }}
+                                {{ form.id_ocorrencia(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.data_hora_ocorrencia.label }}
+                                {{ form.data_hora_ocorrencia(type="datetime-local", class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                {{ form.sugestao.label }}
+                                {{ form.sugestao(class="form-control") }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <input type="hidden" value="0" id="dano" name="dano">
+                    <input type="hidden" value="0" id="classificacao_incidente" name="classificacao_incidente">
+                    <input type="hidden" value="0" id="procedente" name="procedente">
+                    <input type="hidden" value="0" id="macroprocesso" name="macroprocesso">
+                    <input type="hidden" value="0" id="seguranca" name="seguranca">
+                    <input type="hidden" value="0" id="sentinela" name="sentinela">
+                    <input type="hidden" value="0" id="impacto" name="impacto">
+                    <input type="hidden" value="0" id="probabilidade" name="probabilidade">
+                    <input type="hidden" value="0" id="controle" name="controle">
+                    <input type="hidden" value="0" id="causa" name="causa">
+                    <input type="hidden" value="0" id="plano" name="plano">
+                    <input type="hidden" value="0" id="acao" name="acao">
+                    <input type="hidden" value="0" id="status" name="status">
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.submit(class="btn btn-primary col-md-3") }}
+                                <button type="reset" class="btn btn-secondary col-md-3" value="Reset">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <p></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

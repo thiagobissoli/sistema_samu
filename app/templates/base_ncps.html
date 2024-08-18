@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=3.0">
+    <meta name="description" content="Sistema SAMU 192">
+    <title>Sistema SAMU 192</title>
+    <link rel="icon" href="{{ url_for('static', filename='dist/img/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+    {% block head %}
+    <!-- O conteúdo específico da página será inserido aqui -->
+    {% endblock %}
+</head>
+
+<!-- Navbar (Barra de navegação) -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#"><img class="logo" src="{{ url_for('static', filename='dist/img/logo.png') }}" alt="SAMU 192 Logo"></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('ncps.add_ncps') }}">Registrar NCPS</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('ncps.pesquisa') }}">Pesquisar</a>
+            </li>
+
+        </ul>
+    </div>
+</nav>
+
+<header>
+    <div class="text-center">
+        <h1 class="header"><b>SAMU 192 Espírito Santo</b><h1>
+    </div>
+</header>
+
+<!-- Conteúdo Principal -->
+<div class="container">
+    {% block content %}
+    <!-- O conteúdo específico da página será inserido aqui -->
+    {% endblock %}
+</div>
+
+<!-- Rodapé (Opcional) -->
+<footer>
+    <div class="text-center mt-5">
+        <p>© 2023 Serviço de Atendimento Móvel de Urgência - SAMU 192</p>
+    </div>
+</footer>
+
+<!-- Scripts do Bootstrap e jQuery (via CDN) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

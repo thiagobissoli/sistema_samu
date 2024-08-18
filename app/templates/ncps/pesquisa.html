@@ -1,0 +1,23 @@
+{% extends "base_ncps.html" %}
+
+{% block content %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+<h2>Pesquisar Ncps</h2>
+
+<form method="post">
+    {{ form.hidden_tag() }}
+    <div class="form-group">
+        {{ form.id.label }}
+        {{ form.id(class="form-control") }}
+    </div>
+    {{ form.submit(class="btn btn-primary col-md-3") }}
+</form>
+{% endblock %}

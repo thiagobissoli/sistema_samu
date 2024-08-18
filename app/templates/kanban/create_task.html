@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Tarefa{% endblock %}
+
+{% block content %}
+<section class="content">
+  <div class="container-fluid">
+    <div class="card card-primary">
+      <div class="card-header">
+        <h3 class="card-title">Criar Tarefa</h3>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          {{ form.hidden_tag() }}
+          <div class="form-group">
+            {{ form.title.label(class="form-control-label") }}
+            {{ form.title(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.description.label(class="form-control-label") }}
+            {{ form.description(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.responsible_id.label(class="form-control-label") }}
+            {{ form.responsible_id(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.requester_id.label(class="form-control-label") }}
+            {{ form.requester_id(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.due_date.label(class="form-control-label") }}
+            {{ form.due_date(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.priority.label(class="form-control-label") }}
+            {{ form.priority(class="form-control") }}
+          </div>
+          <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

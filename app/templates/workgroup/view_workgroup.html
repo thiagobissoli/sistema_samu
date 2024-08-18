@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}{{ workgroup.name }}{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>{{ workgroup.name }}</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Detalhes do Grupo de Trabalho</h3>
+                <div class="card-tools">
+                    <a href="{{ url_for('workgroup.edit_workgroup', id=workgroup.id) }}" class="btn btn-tool">
+                        <i class="fas fa-pen"></i> Editar
+                    </a>
+                    <a href="{{ url_for('workgroup.add_users_workgroup', id=workgroup.id) }}" class="btn btn-tool">
+                        <i class="fas fa-user-plus"></i> Inserir Usuários
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input type="text" class="form-control" id="name" value="{{ workgroup.name }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="description">Descrição</label>
+                    <textarea class="form-control" id="description" rows="3" readonly>{{ workgroup.description }}</textarea>
+                </div>
+                <h3>Usuários</h3>
+                <ul class="list-group list-group-flush">
+                    {% for user in workgroup.users %}
+                    <li class="list-group-item">{{ user.name }}
+                        <form action="{{ url_for('workgroup.remove_user_from_workgroup', workgroup_id=workgroup.id, user_id=user.id) }}" method="post" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm float-right" onclick="return confirm('Tem certeza que deseja remover este usuário do grupo de trabalho?');">Remover</button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('workgroup.list_workgroups') }}" class="btn btn-primary">Voltar</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

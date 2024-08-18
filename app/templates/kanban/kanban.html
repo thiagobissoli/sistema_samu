@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %}Kanban Board{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fontawesome-free/css/all.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='dist/css/adminlte.min.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Kanban Board</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Home</a></li>
+                    <li class="breadcrumb-item active">Kanban Board</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content pb-3">
+    <div class="container-fluid h-100">
+        <div class="row">
+            {% for project in projects %}
+            <div class="col-md-4">
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ project.name }}</h3>
+                        <div class="card-tools">
+                            <a href="{{ url_for('kanban.kanban_project', project_id=project.id) }}" class="btn btn-tool">
+                                <i class="fas fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ project.description }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='dist/js/adminlte.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    // Funções JS se necessário
+});
+</script>
+{% endblock %}

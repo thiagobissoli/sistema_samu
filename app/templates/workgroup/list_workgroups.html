@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Grupos de Trabalho{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Grupos de Trabalho</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Lista de Grupos de Trabalho</h3>
+                <div class="card-tools">
+                    <a href="{{ url_for('workgroup.create_workgroup') }}" class="btn btn-success">Criar Grupo de Trabalho</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Descrição</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for workgroup in workgroups %}
+                        <tr>
+                            <td>{{ workgroup.name }}</td>
+                            <td>{{ workgroup.description }}</td>
+                            <td>
+                                <a href="{{ url_for('workgroup.view_workgroup', id=workgroup.id) }}" class="btn btn-info btn-sm">Ver</a>
+                                <a href="{{ url_for('workgroup.edit_workgroup', id=workgroup.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="{{ url_for('workgroup.delete_workgroup', id=workgroup.id) }}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este grupo de trabalho?');">Deletar</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

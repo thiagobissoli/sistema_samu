@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %} Lista de Viaturas {% endblock %}
+
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Viaturas</h1>
+                <br>
+                <a href="{{ url_for('viatura.create_viatura') }}" class="btn btn-primary mb-3">Criar Nova Viatura</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Lista de Viaturas</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="viaturas" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>VTR</th>
+                                <th>Placa</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for viatura in viaturas %}
+                            <tr>
+                                <td>{{ viatura.vtr }}</td>
+                                <td>{{ viatura.placa }}</td>
+                                <td>
+                                    <a href="{{ url_for('viatura.edit_viatura', id=viatura.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                    <form action="{{ url_for('viatura.delete_viatura', id=viatura.id) }}" method="post" style="display: inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir a viatura {{ viatura.vtr }}?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Apagar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>VTR</th>
+                                <th>Placa</th>
+                                <th>Ação</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+
+{% endblock %}
+
+{% block script %}
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
+<script>
+  $(function () {
+    $("#viaturas").DataTable();
+  });
+</script>
+{% endblock %}

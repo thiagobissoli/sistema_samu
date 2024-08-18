@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de NCPS{% endblock %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Relatório de NCPS</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Filtrar por Gestor e Data/Hora do Registro</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.gestor.label }}
+                                {{ form.gestor(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.start_date.label }}
+                                {{ form.start_date(class="form-control", type="datetime-local") }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.end_date.label }}
+                                {{ form.end_date(class="form-control", type="datetime-local") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if ncps_list %}
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Relatório de NCPS</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data/Hora Registro</th>
+                            <th>Descrição</th>
+                            <th>Sugestão</th>
+                            <th>Local Padronizado</th>
+                            <th>ID Ocorrência</th>
+                            <th>Data/Hora Ocorrência</th>
+                            <th>Dano</th>
+                            <th>Classificação Incidente</th>
+                            <th>Segurança</th>
+                            <th>Sentinela</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for ncp in ncps_list %}
+                        <tr>
+                            <td>{{ ncp.id }}</td>
+                            <td>{{ ncp.data_hora_registro }}</td>
+                            <td>{{ ncp.descricao }}</td>
+                            <td>{{ ncp.sugestao }}</td>
+                            <td>{{ ncp.local_padronizado.nome if ncp.local_padronizado else 'N/A' }}</td>
+                            <td>{{ ncp.id_ocorrencia }}</td>
+                            <td>{{ ncp.data_hora_ocorrencia }}</td>
+                            <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Não'), ('2', 'Leve'), ('3', 'Moderado'), ('4', 'Grave'), ('5', 'Óbito')], ncp.dano) }}</td>
+                            <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Near miss'), ('2', 'Circunstância de risco'), ('3', 'Incidente ou evento sem dano'), ('4', 'Evento adverso')], ncp.classificacao_incidente) }}</td>
+                            <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Identificação do paciente'), ('2', 'Cuidado limpo e seguro'), ('3', 'Utilização de catéteres e sondas'), ('4', 'Procedimento seguro'), ('5', 'Administração segura de medicamentos e soluções'), ('6', 'Envolvimento do paciente com sua própria segurança'), ('7', 'Comunicação efetiva'), ('8', 'Prevenção de queda e acidente'), ('9', 'Prevenção de úlceras por pressão'), ('10', 'Segurança na utilização de tecnologia')], ncp.seguranca) }}</td>
+                            <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Ato de violação intencional à prontidão'), ('2', 'Endereço errado em chamado prioritário'), ('3', 'Decisão técnica do MR inapropriada (apoio imediato de USA)'), ('4', 'Não empenho de recurso prioritário pelo RO'), ('5', 'Insubordinação às decisões da Central de Regulação'), ('6', 'Deslocamento inadequado com demora no percurso'), ('7', 'Contra-regulação inadequada, incoerente, distorcida ou ausente'), ('8', 'Administração de medicamentos de vigilância sem prescrição médica'), ('9', 'Intercorrência inesperada e crítica após medicação'), ('10', 'Intercorrência inesperada e crítica após procedimento'), ('11', 'Recusa coerente de paciente pelo primeiro destino'), ('12', 'Acidente de trânsito em atendimento'), ('13', 'Abandono de paciente'), ('14', 'Queda de paciente'), ('15', 'Atraso em situação tempo-dependente'), ('16', 'Acidente com material biológico ou pérfuro-cortante'), ('17', 'Agressão física à equipe'), ('18', 'Atendimento em cena insegura')], ncp.sentinela) }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

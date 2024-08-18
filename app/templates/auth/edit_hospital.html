@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Hospital{% endblock %}
+
+{% block content %}
+<div class="container col-xl-10 col-xxl-8 px-4 py-5">
+    <div class="row align-items-center g-lg-5 py-5">
+        <div class="col-lg-5 text-center text-lg-start">
+            <h1 class="display-4 fw-bold lh-1 text-body-emphasis mb-3" style="color:rgb(49, 113, 181);">Editar Hospital</h1>
+            <p class="col-lg-10 fs-4">Atualize as informações do seu hospital</p>
+        </div>
+        <div class="col-md-12 mx-auto col-lg-5">
+            <form method="post">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    {{ form.nome.label(class="form-label") }}
+                    {{ form.nome(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    {{ form.email.label(class="form-label") }}
+                    {{ form.email(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <br/>
+                    {{ form.submit(class="btn btn-success col-md-3") }}
+                    <a href="{{ url_for('main.index') }}" class="btn btn-primary col-md-3">Voltar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

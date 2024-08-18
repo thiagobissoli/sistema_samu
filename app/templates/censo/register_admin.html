@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Registrar Censo (Admin)</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-primary">
+            <div class="card-header">
+                <h3 class="card-title">Registrar Censo (Admin)</h3>
+            </div>
+            <form method="post">
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="hospital_id">Hospital</label>
+                        <select name="hospital_id" class="form-control" required>
+                            {% for hospital in hospitals %}
+                            <option value="{{ hospital.id }}">{{ hospital.nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="leitos_ocupados">Leitos Ocupados</label>
+                        <input type="number" name="leitos_ocupados" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="observacao">Observação</label>
+                        <textarea name="observacao" class="form-control"></textarea>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Registrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

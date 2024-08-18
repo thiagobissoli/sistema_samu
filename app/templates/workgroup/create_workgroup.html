@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Criar Grupo de Trabalho{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Criar Grupo de Trabalho</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Novo Grupo de Trabalho</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('workgroup.create_workgroup') }}" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.name.label }}
+                        {{ form.name(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.description.label }}
+                        {{ form.description(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-success") }}
+                        <a href="{{ url_for('workgroup.list_workgroups') }}" class="btn btn-primary">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

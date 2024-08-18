@@ -1,0 +1,71 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: right;
+  padding: 2rem;
+}
+
+header {
+  width: 100%;
+  background-color: red;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+h1.header {
+  color: white;
+  font-size: 2rem;
+  margin: 0;
+}
+
+input.primario[type="submit"] {
+  font-size: 1rem;
+  padding: 0.5rem;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+input.primario[type="submit"]:hover {
+  background-color: darkred;
+}
+
+a.primario:visited {
+  font-size: 1rem;
+  padding: 0.5rem;
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+a.primario:hover {
+  background-color: darkred;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.2rem;
+}
+
+th,
+td {
+  border: 1px solid black;
+  padding: 0.5rem;
+  text-align: center;
+}
+
+th {
+  background-color: red;
+  color: white;
+}
+
+.logo {
+  width: 60px;
+  height: auto;
+  margin-right: 1rem;
+}

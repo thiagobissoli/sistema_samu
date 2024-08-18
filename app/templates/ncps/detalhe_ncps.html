@@ -1,0 +1,37 @@
+{% extends "base_ncps.html" %}
+
+{% block content %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+<h2>Detalhes da NCPS</h2>
+</br>
+<form>
+    <div class="form-group">
+        <label><strong>ID:</strong> {{ ncp.id }} </label>
+    </div>
+
+    <div class="form-group">
+        <label><strong>Data e Hora do Registro:</strong> {{ ncp.data_hora_registro }}</label>
+    </div>
+
+    <div class="form-group">
+        <label><strong>Responsável pela NCPS:</strong> {{ ncp.coordenador.name if ncp.coordenador }}</label>
+    </div>
+
+    <div class="form-group">
+        <label><strong>Plano de ação:</strong> {{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Ações estruturais'), ('2', 'Ações construtivas'), ('3', 'Ações educacionais'), ('4', 'Ações diciplinares'), ('5', 'Ações administrativas')], ncp.acao) }}</label>
+    </div>
+
+    <div class="form-group">
+        <label><strong>Status do processo:</strong> {{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Analisando'), ('2', 'Concluído Análise'), ('3', 'Arquivado'), ('4', 'Encaminhado ao gestor compedente de outra instituição')], ncp.status) }}</label>
+    </div>
+
+</form>
+{% endblock %}

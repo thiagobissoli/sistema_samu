@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Censo Atualizado</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            {% for censo in censo_data %}
+            {% set card_color = 'bg-success' if censo.ocupacao < 50 else 'bg-warning' if censo.ocupacao < 100 else 'bg-danger' %}
+            <div class="col-md-3">
+                <div class="card {{ card_color }}">
+                    <div class="card-header">
+                        <h3 class="card-title">{{ censo.hospital }}</h3>
+                    </div>
+                    <div class="card-body">
+                        {% if censo.data_hora %}
+                        <p><strong>Data/Hora:</strong> {{ censo.data_hora }}</p>
+                        <p><strong>Leitos Ocupados:</strong> {{ censo.leitos_ocupados }} / {{ censo.leitos_totais }}</p>
+                        <p><strong>Ocupação (%):</strong> {{ censo.ocupacao | round(2) }}%</p>
+                        <p><strong>Obs:</strong> {{ censo.observacao }}</p>
+                        {% else %}
+                        <p>Nenhum censo registrado.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

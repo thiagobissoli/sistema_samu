@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="60">
+{% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Checkpoint de Chegada na Central</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Tabela de Previsões</h3>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x: auto;">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Viatura</th>
+                                <th>Horário Previsto de Chegada</th>
+                                <th>Serviço Previsto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for previsao in previsoes %}
+                            <tr>
+                                <td>{{ previsao.viatura.vtr }}</td>
+                                <td>{{ previsao.hora_chegada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                <td>
+                                    <button class="btn {{ 'btn-secondary' if previsao.farmacia == 0 else 'btn-danger' if previsao.farmacia == 1 else 'btn-success' }}" disabled>💊</button>
+                                    <button class="btn {{ 'btn-secondary' if previsao.limpeza == 0 else 'btn-danger' if previsao.limpeza == 1 else 'btn-success' }}" disabled>🧹</button>
+                                    <button class="btn {{ 'btn-secondary' if previsao.cme == 0 else 'btn-danger' if previsao.cme == 1 else 'btn-success' }}" disabled>🏥</button>
+                                    <button class="btn {{ 'btn-secondary' if previsao.frota == 0 else 'btn-danger' if previsao.frota == 1 else 'btn-success' }}" disabled>🚗</button>
+                                    <button class="btn {{ 'btn-secondary' if previsao.administrativo == 0 else 'btn-danger' if previsao.administrativo == 1 else 'btn-success' }}" disabled>📂</button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">Nenhuma previsão de chegada de ambulância!</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <br>
+
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Unidades no Pátio da Central</h3>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x: auto;">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Viatura</th>
+                                <th>Entrada</th>
+                                <th>Tempo Estacionado</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in parked_viaturas %}
+                            <tr>
+                                <td>{{ record.viatura.vtr }}</td>
+                                <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>
+                                <td>
+                                    <button class="btn-toggle btn {{ 'btn-secondary' if record.farmacia == 0 else 'btn-danger' if record.farmacia == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="farmacia">💊</button>
+                                    <button class="btn-toggle btn {{ 'btn-secondary' if record.limpeza == 0 else 'btn-danger' if record.limpeza == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="limpeza">🧹</button>
+                                    <button class="btn-toggle btn {{ 'btn-secondary' if record.cme == 0 else 'btn-danger' if record.cme == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="cme">🏥</button>
+                                    <button class="btn-toggle btn {{ 'btn-secondary' if record.frota == 0 else 'btn-danger' if record.frota == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="frota">🚗</button>
+                                    <button class="btn-toggle btn {{ 'btn-secondary' if record.administrativo == 0 else 'btn-danger' if record.administrativo == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="administrativo">📂</button>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">Nenhuma ambulância no pátio!</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<script>
+$(document).ready(function(){
+    $(".btn-toggle").click(function(event){
+        event.preventDefault();
+
+        const button = $(this);
+        const recordId = button.data('record-id');
+        const checkpointName = button.data('checkpoint-name');
+
+        fetch("/patio/toggle-checkpoint", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                record_id: recordId,
+                checkpoint_name: checkpointName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === "success") {
+                const newValue = data.new_value;
+                if(newValue === 0) {
+                    button.removeClass('btn-danger btn-success').addClass('btn-secondary');
+                } else if(newValue === 1) {
+                    button.removeClass('btn-secondary btn-success').addClass('btn-danger');
+                } else {
+                    button.removeClass('btn-secondary btn-danger').addClass('btn-success');
+                }
+            } else {
+                alert("Erro ao alternar o checkpoint!");
+            }
+        })
+        .catch(error => {
+            console.error("Erro na requisição:", error);
+            alert("Erro na requisição!");
+        });
+    });
+});
+</script>
+{% endblock %}

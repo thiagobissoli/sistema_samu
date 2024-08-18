@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Calendário de Visualização{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar/main.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Calendário de Visualização</h1>
+            </div>
+            <div class="col-sm-6">
+                <select id="workgroup-select" class="form-control">
+                    <option value="">Todos os Grupos</option>
+                    {% for workgroup in workgroups %}
+                    <option value="{{ workgroup.id }}">{{ workgroup.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card card-primary">
+          <div class="card-body p-0">
+            <div id="calendar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-interaction/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.js') }}"></script>
+<script>
+  $(function () {
+    var Calendar = FullCalendar.Calendar;
+    var calendarEl = document.getElementById('calendar');
+    var workgroupSelect = document.getElementById('workgroup-select');
+
+    function fetchEvents(workgroupId) {
+      var url = '/calendar/api/events';
+      if (workgroupId) {
+        url += '?workgroup_id=' + workgroupId;
+      }
+      $.ajax({
+        url: url,
+        method: 'GET',
+        success: function(data) {
+          calendar.removeAllEvents();
+          calendar.addEventSource(data);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          console.log('Erro ao buscar eventos:', textStatus, errorThrown);
+        }
+      });
+    }
+
+    var calendar = new Calendar(calendarEl, {
+      plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid' ],
+      header    : {
+        left  : 'prev,next today',
+        center: 'title',
+        right : 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      editable  : false,
+      droppable : false
+    });
+
+    calendar.render();
+
+    workgroupSelect.addEventListener('change', function() {
+      fetchEvents(this.value);
+    });
+
+    // Fetch initial events for all groups
+    fetchEvents("");
+  });
+</script>
+{% endblock %}

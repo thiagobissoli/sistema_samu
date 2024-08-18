@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="60">
+{% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Registro de Entrada</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Registrar Entrada de Viatura</h3>
+            </div>
+            <div class="card-body">
+                <form method="post" class="form-inline">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group mr-3">
+                        {{ form.viatura.label }}
+                        {{ form.viatura(class="form-control ml-2") }}
+                    </div>
+                    <div class="form-group mr-3">
+                        {{ form.submit(class="btn btn-primary", value="Registrar Entrada") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+        <br>
+
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Unidades no Pátio da Central</h3>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x: auto;">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Ambulância</th>
+                                <th>Entrada</th>
+                                <th>Tempo Estacionado</th>
+                                <th>Saída</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for record in parked_viaturas %}
+                            <tr>
+                                <td>{{ record.viatura.vtr }}</td>
+                                <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>
+                                <td>
+                                    <form method="post" action="{{ url_for('patio.register_exit', control_id=record.id) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">Registrar Saída</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4">Nenhuma ambulância no pátio!</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+$(document).ready(function(){
+    $(".toggle-btn").click(function(event){
+        event.preventDefault();
+
+        const recordId = $(this).data('record-id');
+        const checkpointName = $(this).data('checkpoint-name');
+
+        fetch("{{ url_for('patio.toggle_checkpoint') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                record_id: recordId,
+                checkpoint_name: checkpointName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === "success") {
+                location.reload();
+            } else {
+                alert("Erro ao alternar o checkpoint!");
+            }
+        })
+        .catch(error => {
+            console.error("Erro na requisição:", error);
+            alert("Erro na requisição!");
+        });
+    });
+});
+</script>
+
+{% endblock %}

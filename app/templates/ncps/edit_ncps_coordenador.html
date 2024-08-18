@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Tratativa do Gestor da NCPS</h2>
+    <br>
+    <form method="post">
+        <div class="form-row">
+
+        {{ form.hidden_tag() }}
+
+            <div class="form-group">
+                <h4>Descrição da NCPS</h4>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.id.label }}
+                {{ form.id(class="form-control", readonly=True) }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form.data_hora_registro.label }}
+                {{ form.data_hora_registro(type="datetime-local", class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                {{ form.descricao.label }}
+                {{ form.descricao(class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.local.label }}
+                {{ form.local(class="form-control", readonly=True) }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.id_ocorrencia.label }}
+                {{ form.id_ocorrencia(class="form-control", readonly=True) }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.data_hora_ocorrencia.label }}
+                {{ form.data_hora_ocorrencia(type="datetime-local", class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                {{ form.sugestao.label }}
+                {{ form.sugestao(class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <hr>
+        <h4>Análise da Qualidade</h4>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.local_padronizado.label }}
+                {{ form.local_padronizado(class="form-control", readonly=True) }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.classificacao_incidente.label }}
+                {{ form.classificacao_incidente(class="form-control", readonly=True) }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.dano.label }}
+                {{ form.dano(class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.procedente.label }}
+                {{ form.procedente(class="form-control", readonly=True) }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form.gestor.label }}
+                {{ form.gestor(class="form-control", readonly=True) }}
+            </div>
+            <div class="form-group col-md-4">
+                {{ form.coordenador.label }}
+                {{ form.coordenador(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.macroprocesso.label }}
+                {{ form.macroprocesso(class="form-control", readonly=True) }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.seguranca.label }}
+                {{ form.seguranca(class="form-control", readonly=True) }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.sentinela.label }}
+                {{ form.sentinela(class="form-control", readonly=True) }}
+            </div>
+        </div>
+
+        <hr>
+        <h4>Tratativa do Gestor</h4>
+
+        <div class="form-row">
+            <div class="form-group col-md-3">
+                {{ form.impacto.label }}
+                {{ form.impacto(class="form-control") }}
+            </div>
+
+            <div class="form-group col-md-3">
+                {{ form.probabilidade.label }}
+                {{ form.probabilidade(class="form-control") }}
+            </div>
+
+            <div class="form-group col-md-3">
+                {{ form.controle.label }}
+                {{ form.controle(class="form-control") }}
+            </div>
+
+            <div class="form-group col-md-3">
+                {{ form.causa.label }}
+                {{ form.causa(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                {{ form.plano.label }}
+                {{ form.plano(class="form-control") }}
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.acao.label }}
+                {{ form.acao(class="form-control") }}
+            </div>
+
+            <div class="form-group col-md-4">
+                {{ form.prazo.label }}
+                {{ form.prazo(type="date", class="form-control") }}
+            </div>
+
+        </div>
+
+        <hr>
+        <h4>Status da NCPS</h4>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                {{ form.status.label }}
+                {{ form.status(class="form-control") }}
+            </div>
+
+            <div class="form-group col-md-12">
+                <button type="submit" class="btn btn-primary col-md-3">Salvar</button>
+                <a href="{{ url_for('gestor_ncps') }}" class="btn btn-secondary col-md-3">Cancelar</a>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

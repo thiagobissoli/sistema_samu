@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Registrar Censo{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Registrar Censo</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Registrar Censo Atualizado</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.leitos_ocupados.label }}
+                        {{ form.leitos_ocupados(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.observacao.label }}
+                        {{ form.observacao(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

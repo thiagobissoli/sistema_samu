@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Censo Atualizado</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Censo</h3>
+            </div>
+
+
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Hospital</th>
+                            <th>Data/Hora</th>
+                            <th>Leitos Ocupados</th>
+                            <th>Ocupação (%)</th>
+                            <th>Observação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for hospital in hospitais %}
+                        {% set censo = censo_dict.get(hospital.id) %}
+                        {% if censo %}
+                        {% set row_color = 'table-success' if (censo.leitos_ocupados / hospital.leitos) * 100 < 50 else 'table-warning' if (censo.leitos_ocupados / hospital.leitos) * 100 < 100 else 'table-danger' %}
+                        <tr class="{{ row_color }}">
+                            <td>{{ hospital.nome }}</td>
+                            <td>{{ censo.data_hora }}</td>
+                            <td>{{ censo.leitos_ocupados }} / {{ hospital.leitos }}</td>
+                            <td>{{ "%.2f" % ((censo.leitos_ocupados / hospital.leitos) * 100) }}%</td>
+                            <td>{{ censo.observacao }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td>{{ hospital.nome }}</td>
+                            <td colspan="4">Nenhum censo registrado.</td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

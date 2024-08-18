@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="15;url={{ url_for('main.index1') }}">
+
+    <meta http-equiv="refresh" content="60">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.css') }}">
+    <style>
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .chart-container {
+            width: 50%;
+            margin: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Dashboard v2</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-md-6">
+                <!-- Tabela de ControlePark -->
+                <div class="card card-default mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Unidades no Pátio da Central Hoje</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table id="controleTableQ" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Viatura</th>
+                                        <th>Entrada</th>
+                                        <th>Tempo Estacionado</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in controles %}
+                                    <tr>
+                                        <td>{{ record.viatura.vtr }}</td>
+                                        <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                        <td>{{ ((record.hora_saida - record.hora_entrada).seconds // 60) }} minutos</td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4">Nenhuma ambulância no pátio!</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Gráfico de Setores -->
+                <div class="card card-default mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Gráficos de Setores Hoje</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-interaction/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $('#previsaoTable, #controleTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/Portuguese-Brasil.json"
+        }
+    });
+
+    var ctx = document.getElementById('sectorChart').getContext('2d');
+    var sectorChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Farmácia', 'Limpeza', 'CME', 'Frota', 'Administrativo'],
+            datasets: [{
+                data: [{{ percentages.farmacia }}, {{ percentages.limpeza }}, {{ percentages.cme }}, {{ percentages.frota }}, {{ percentages.administrativo }}],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    $(".btn-toggle").click(function(event){
+        event.preventDefault();
+
+        const button = $(this);
+        const recordId = button.data('record-id');
+        const checkpointName = button.data('checkpoint-name');
+
+        fetch("/patio/toggle-checkpoint", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                record_id: recordId,
+                checkpoint_name: checkpointName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === "success") {
+                const newValue = data.new_value;
+                if(newValue === 0) {
+                    button.removeClass('btn-danger btn-success').addClass('btn-secondary');
+                } else if(newValue === 1) {
+                    button.removeClass('btn-secondary btn-success').addClass('btn-danger');
+                } else {
+                    button.removeClass('btn-secondary btn-danger').addClass('btn-success');
+                }
+            } else {
+                alert("Erro ao alternar o checkpoint!");
+            }
+        })
+        .catch(error => {
+            console.error("Erro na requisição:", error);
+            alert("Erro na requisição!");
+        });
+    });
+});
+</script>
+{% endblock %}

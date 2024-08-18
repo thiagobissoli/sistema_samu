@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %} Lista de Perfils de Acesso {% endblock %}
+
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Perfils de Acesso</h1>
+              <br>
+              <a href="{{ url_for('auth.create_role') }}" class="btn btn-primary mb-3">Criar Novo Perfil de Acesso</a>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="row">
+        <div class="col-12">
+
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Lista de Perfils de Acesso</h3>
+            </div>
+            <!-- /.card-header -->
+            <div class="card-body">
+              <table id="perfils" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Perfil</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for role in roles %}
+                    <tr>
+                        <td>{{ role.name }}</td>
+                        <td>
+                            <a href="{{ url_for('auth.edit_role', id=role.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                            <form action="{{ url_for('auth.delete_role', id=role.id) }}" method="post" style="display: inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir o perfil {{ role.name }}?');">
+                                <button type="submit" class="btn btn-danger btn-sm">Apagar</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Perfil</th>
+                        <th>Ação</th>
+                    </tr>
+                </tfoot>
+              </table>
+            </div>
+            <!-- /.card-body -->
+          </div>
+          <!-- /.card -->
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </section>
+    <!-- /.content -->
+
+{% endblock %}
+
+{% block script %}
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
+{% endblock %}

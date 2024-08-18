@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Listagem de NCPS{% endblock %}
+
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/daterangepicker/daterangepicker.css') }}">
+{% endblock %}
+
+{% block content %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Listagem de NCPS</h1>
+            </div>
+            <div class="col-sm-6">
+                <a href="{{ url_for('ncps.export_ncps_excel') }}" class="btn btn-success float-right">Exportar para Excel</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">NCPS</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" class="form-inline mb-3">
+                    <div class="form-group mr-2">
+                        <label for="start_date" class="mr-2">Data e Hora Inicial</label>
+                        <input type="datetime-local" class="form-control" name="start_date" id="start_date" value="{{ start_date }}">
+                    </div>
+                    <div class="form-group mr-2">
+                        <label for="end_date" class="mr-2">Data e Hora Final</label>
+                        <input type="datetime-local" class="form-control" name="end_date" id="end_date" value="{{ end_date }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                </form>
+                <div style="overflow-x: auto;">
+                    <table id="ncpsTable" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Data e Hora do Registro</th>
+                                <th>ID da Ocorrência</th>
+                                <th>Gestor</th>
+                                <th>Coordenador</th>
+                                <th>Status</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ncp in ncps %}
+                            <tr>
+                                <td>{{ ncp.id }}</td>
+                                <td>{{ ncp.data_hora_registro }}</td>
+                                <td>{{ ncp.id_ocorrencia }}</td>
+                                <td>{{ ncp.gestor.nome if ncp.gestor else None }}</td>
+                                <td>{{ ncp.coordenador.name if ncp.coordenador else None }}</td>
+                                <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Analisando'), ('2', 'Concluído Análise'), ('3', 'Arquivado'), ('4', 'Encaminhado ao gestor competente de outra instituição')], ncp.status) }}</td>
+                                <td>
+                                    <a href="{{ url_for('ncps.edit_ncps', id=ncp.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                    <form method="post" action="{{ url_for('ncps.delete_ncps', id=ncp.id) }}" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Você tem certeza que quer excluir a NCPS?');">Excluir</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer">
+                <p></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
+<!-- Date Range Picker -->
+<script src="{{ url_for('static', filename='plugins/daterangepicker/daterangepicker.js') }}"></script>
+<script>
+  $(function () {
+    $("#ncpsTable").DataTable();
+  });
+</script>
+{% endblock %}

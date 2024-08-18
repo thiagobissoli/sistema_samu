@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Adicionar Usuário ao Grupo de Trabalho{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Adicionar Usuário ao Grupo de Trabalho: {{ workgroup.name }}</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Selecione um usuário para adicionar ao grupo de trabalho</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="form-group">
+                        {{ form.users.label }}
+                        {{ form.users(class="form-control") }}
+                    </div>
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-success") }}
+                        <a href="{{ url_for('workgroup.view_workgroup', id=workgroup.id) }}" class="btn btn-primary">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card card-default mt-4">
+            <div class="card-header">
+                <h3 class="card-title">Usuários no Grupo de Trabalho</h3>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nome</th>
+                            <th>Email</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in workgroup.users %}
+                        <tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>
+                                <form action="{{ url_for('workgroup.remove_user_from_workgroup', workgroup_id=workgroup.id, user_id=user.id) }}" method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja remover este usuário do grupo de trabalho?');">Remover</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

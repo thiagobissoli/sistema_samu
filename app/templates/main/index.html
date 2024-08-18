@@ -1,0 +1,335 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <meta http-equiv="refresh" content="60">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.css') }}">
+    <style>
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .chart-container {
+            width: 50%;
+            margin: auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Dashboard</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Tabela de Previsões -->
+                <div class="card card-default mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Tabela de Previsões</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table id="previsaoTableQ" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Viatura</th>
+                                        <th>Horário Previsto de Chegada</th>
+                                        <th>Serviço Previsto</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for previsao in previsoes %}
+                                    <tr>
+                                        <td>{{ previsao.viatura.vtr }}</td>
+                                        <td>{{ previsao.hora_chegada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                        <td>
+                                            <button class="btn {{ 'btn-secondary' if previsao.farmacia == 0 else 'btn-danger' }}" disabled>💊</button>
+                                            <button class="btn {{ 'btn-secondary' if previsao.limpeza == 0 else 'btn-danger' }}" disabled>🧹</button>
+                                            <button class="btn {{ 'btn-secondary' if previsao.cme == 0 else 'btn-danger' }}" disabled>🏥</button>
+                                            <button class="btn {{ 'btn-secondary' if previsao.frota == 0 else 'btn-danger' }}" disabled>🚗</button>
+                                            <button class="btn {{ 'btn-secondary' if previsao.administrativo == 0 else 'btn-danger' }}" disabled>📂</button>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="3">Nenhuma previsão de chegada de ambulância!</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <!-- Tabela de ControlePark -->
+                <div class="card card-default mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Unidades no Pátio da Central</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-wrapper">
+                            <table id="controleTableQ" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Viatura</th>
+                                        <th>Entrada</th>
+                                        <th>Tempo Estacionado</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in controles %}
+                                    <tr>
+                                        <td>{{ record.viatura.vtr }}</td>
+                                        <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                        <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>
+                                        <td>
+                                            <button class="btn-toggle btn {{ 'btn-secondary' if record.farmacia == 0 else 'btn-danger' if record.farmacia == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="farmacia" disabled>💊</button>
+                                            <button class="btn-toggle btn {{ 'btn-secondary' if record.limpeza == 0 else 'btn-danger' if record.limpeza == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="limpeza" disabled>🧹</button>
+                                            <button class="btn-toggle btn {{ 'btn-secondary' if record.cme == 0 else 'btn-danger' if record.cme == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="cme" disabled>🏥</button>
+                                            <button class="btn-toggle btn {{ 'btn-secondary' if record.frota == 0 else 'btn-danger' if record.frota == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="frota" disabled>🚗</button>
+                                            <button class="btn-toggle btn {{ 'btn-secondary' if record.administrativo == 0 else 'btn-danger' if record.administrativo == 1 else 'btn-success' }}" data-record-id="{{ record.id }}" data-checkpoint-name="administrativo" disabled>📂</button>
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="4">Nenhuma ambulância no pátio!</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Calendar Section -->
+                <div class="card card-primary">
+                  <div class="card-body p-0">
+                    <div id="calendar"></div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Gráfico de Setores -->
+                <div class="card card-default mt-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Gráficos de Setores</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-container">
+                            <canvas id="sectorChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-interaction/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $('#previsaoTable, #controleTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/Portuguese-Brasil.json"
+        }
+    });
+
+    var Calendar = FullCalendar.Calendar;
+    var calendarEl = document.getElementById('calendar');
+
+    var calendar = new Calendar(calendarEl, {
+      plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid' ],
+      header    : {
+        left  : 'prev,next today',
+        center: 'title',
+        right : 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events    : '/calendar/api/events',
+      editable  : true,
+      droppable : true,
+      drop      : function(info) {
+        var event = {
+          title: info.draggedEl.innerText,
+          start: info.dateStr,
+          backgroundColor: info.draggedEl.style.backgroundColor,
+          borderColor: info.draggedEl.style.borderColor,
+          textColor: info.draggedEl.style.color
+        };
+
+        $.ajax({
+          url: '/calendar/api/events',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(event),
+          success: function(response) {
+            event.id = response.id;
+            calendar.addEvent(event);
+          }
+        });
+      },
+      eventDrop: function(info) {
+        var event = {
+          id: info.event.id,
+          title: info.event.title,
+          start: info.event.start.toISOString(),
+          end: info.event.end ? info.event.end.toISOString() : null,
+          backgroundColor: info.event.backgroundColor,
+          borderColor: info.event.borderColor,
+          textColor: info.event.textColor
+        };
+
+        $.ajax({
+          url: '/calendar/api/events/' + info.event.id,
+          method: 'PUT',
+          contentType: 'application/json',
+          data: JSON.stringify(event),
+          success: function(response) {
+            // Handle success
+          }
+        });
+      },
+      eventReceive: function(info) {
+        var event = {
+          title: info.event.title,
+          start: info.event.start.toISOString(),
+          backgroundColor: info.event.backgroundColor,
+          borderColor: info.event.borderColor,
+          textColor: info.event.textColor
+        };
+
+        $.ajax({
+          url: '/calendar/api/events',
+          method: 'POST',
+          contentType: 'application/json',
+          data: JSON.stringify(event),
+          success: function(response) {
+            info.event.setProp('id', response.id);
+          }
+        });
+      },
+      eventClick: function(info) {
+        if (confirm("Você quer deletar este evento?")) {
+          $.ajax({
+            url: '/calendar/api/events/' + info.event.id,
+            method: 'DELETE',
+            success: function(response) {
+              info.event.remove();
+            }
+          });
+        }
+      }
+    });
+
+    calendar.render();
+
+    var ctx = document.getElementById('sectorChart').getContext('2d');
+    var sectorChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Farmácia', 'Limpeza', 'CME', 'Frota', 'Administrativo'],
+            datasets: [{
+                data: [{{ percentages.farmacia }}, {{ percentages.limpeza }}, {{ percentages.cme }}, {{ percentages.frota }}, {{ percentages.administrativo }}],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(tooltipItem) {
+                            return tooltipItem.label + ': ' + tooltipItem.raw + '%';
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    $(".btn-toggle").click(function(event){
+        event.preventDefault();
+
+        const button = $(this);
+        const recordId = button.data('record-id');
+        const checkpointName = button.data('checkpoint-name');
+
+        fetch("/patio/toggle-checkpoint", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                record_id: recordId,
+                checkpoint_name: checkpointName
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if(data.status === "success") {
+                const newValue = data.new_value;
+                if(newValue === 0) {
+                    button.removeClass('btn-danger btn-success').addClass('btn-secondary');
+                } else if(newValue === 1) {
+                    button.removeClass('btn-secondary btn-success').addClass('btn-danger');
+                } else {
+                    button.removeClass('btn-secondary btn-danger').addClass('btn-success');
+                }
+            } else {
+                alert("Erro ao alternar o checkpoint!");
+            }
+        })
+        .catch(error => {
+            console.error("Erro na requisição:", error);
+            alert("Erro na requisição!");
+        });
+    });
+});
+</script>
+{% endblock %}

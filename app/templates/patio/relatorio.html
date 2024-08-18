@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block head %}
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+    <style>
+        .table-wrapper {
+            overflow-x: auto;
+        }
+        .export-button {
+            margin: 10px 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Relatório de Estacionamento</h1>
+            </div>
+            <div class="col-sm-6">
+                <a href="{{ url_for('patio.exportar_relatorio') }}" class="btn btn-success float-right">Exportar para Excel</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Detalhes do Estacionamento</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table id="relatorioTable" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Viatura</th>
+                                <th>Placa</th>
+                                <th>Hora de Entrada</th>
+                                <th>Hora de Saída</th>
+                                <th>Farmácia</th>
+                                <th>Limpeza</th>
+                                <th>CME</th>
+                                <th>Frota</th>
+                                <th>Administrativo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for controle in controles %}
+                            <tr>
+                                <td>{{ controle.id }}</td>
+                                <td>{{ controle.viatura.vtr }}</td>
+                                <td>{{ controle.viatura.placa }}</td>
+                                <td>{{ controle.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
+                                <td>{{ controle.hora_saida.strftime('%d/%m/%y - %H:%M:%S') if controle.hora_saida else 'N/A' }}</td>
+                                <td>{{ 'N/A' if controle.farmacia == 0 else 'Faltou' if controle.farmacia == 1 else 'Cumpriu' }}</td>
+                                <td>{{ 'N/A' if controle.limpeza == 0 else 'Faltou' if controle.limpeza == 1 else 'Cumpriu' }}</td>
+                                <td>{{ 'N/A' if controle.cme == 0 else 'Faltou' if controle.cme == 1 else 'Cumpriu' }}</td>
+                                <td>{{ 'N/A' if controle.frota == 0 else 'Faltou' if controle.frota == 1 else 'Cumpriu' }}</td>
+                                <td>{{ 'N/A' if controle.administrativo == 0 else 'Faltou' if controle.administrativo == 1 else 'Cumpriu' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card card-default mt-4">
+            <div class="card-header">
+                <h3 class="card-title">Detalhes das Previsões</h3>
+            </div>
+            <div class="card-body">
+                <div class="table-wrapper">
+                    <table id="previsaoTable" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Viatura</th>
+                                <th>Hora de Chegada</th>
+                                <th>Farmácia</th>
+                                <th>Limpeza</th>
+                                <th>CME</th>
+                                <th>Frota</th>
+                                <th>Administrativo</th>
+                                <th>Finalização</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for previsao in previsoes %}
+                            <tr>
+                                <td>{{ previsao.id }}</td>
+                                <td>{{ previsao.viatura.vtr }}</td>
+                                <td>{{ previsao.hora_chegada.strftime('%d/%m/%y - %H:%M:%S') if previsao.hora_chegada else 'N/A' }}</td>
+                                <td>{{ 'N/A' if previsao.farmacia == 0 else 'Previsto' if previsao.farmacia == 1 }}</td>
+                                <td>{{ 'N/A' if previsao.limpeza == 0 else 'Previsto' if previsao.limpeza == 1 }}</td>
+                                <td>{{ 'N/A' if previsao.cme == 0 else 'Previsto' if previsao.cme == 1 }}</td>
+                                <td>{{ 'N/A' if previsao.frota == 0 else 'Previsto' if previsao.frota == 1 }}</td>
+                                <td>{{ 'N/A' if previsao.administrativo == 0 else 'Previsto' if previsao.administrativo == 1 }}</td>
+                                <td>{{ 'Não finalizado' if previsao.finalizacao == 0 else 'Confirmado entrada' if previsao.finalizacao == 1 else 'Cancelado previsão' }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block script %}
+<!-- jQuery -->
+<script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+<script>
+$(document).ready(function() {
+    $('#relatorioTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/Portuguese-Brasil.json"
+        }
+    });
+    $('#previsaoTable').DataTable({
+        "paging": true,
+        "lengthChange": false,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "autoWidth": false,
+        "responsive": true,
+        "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.11.3/i18n/Portuguese-Brasil.json"
+        }
+    });
+});
+</script>
+{% endblock %}

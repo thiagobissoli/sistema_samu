@@ -1,0 +1,314 @@
+{% extends "base.html" %}
+
+{% block title %}Calendário{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar/main.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Calendário</h1>
+            </div>
+            <div class="col-sm-6">
+                <select id="workgroup-select" class="form-control">
+                    <option value="">Todos os Grupos</option>
+                    {% for workgroup in workgroups %}
+                    <option value="{{ workgroup.id }}">{{ workgroup.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3">
+        <div class="sticky-top mb-3">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">Eventos Arrastáveis</h4>
+            </div>
+            <div class="card-body">
+              <div id="external-events">
+                <div class="external-event bg-danger">Troca de VTR</div>
+                <div class="external-event bg-warning">Manutenção VTR</div>
+                <div class="external-event bg-success">Evento</div>
+                <div class="external-event bg-info">Reunião</div>
+                <div class="external-event bg-primary">Treinamento</div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3 class="card-title">Criar Evento</h3>
+            </div>
+            <div class="card-body">
+              <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
+                <ul class="fc-color-picker" id="color-chooser">
+                  <li><a class="text-primary" href="#"><i class="fas fa-square"></i></a></li>
+                  <li><a class="text-warning" href="#"><i class="fas fa-square"></i></a></li>
+                  <li><a class="text-success" href="#"><i class="fas fa-square"></i></a></li>
+                  <li><a class="text-danger" href="#"><i class="fas fa-square"></i></a></li>
+                  <li><a class="text-muted" href="#"><i class="fas fa-square"></i></a></li>
+                </ul>
+              </div>
+              <div class="input-group">
+                <input id="new-event" type="text" class="form-control" placeholder="Título do Evento">
+                <div class="input-group-append">
+                  <button id="add-new-event" type="button" class="btn btn-primary">Criar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-9">
+        <div class="card card-primary">
+          <div class="card-body p-0">
+            <div id="calendar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="modal fade" id="eventModal" tabindex="-1" role="dialog" aria-labelledby="eventModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="eventModalLabel">Editar Evento</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="eventForm">
+          <div class="form-group">
+            <label for="eventTitle">Título do Evento</label>
+            <input type="text" class="form-control" id="eventTitle">
+          </div>
+          <input type="hidden" id="eventId">
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+        <button type="button" class="btn btn-danger" id="deleteEvent">Excluir</button>
+        <button type="button" class="btn btn-primary" id="saveEvent">Salvar Alterações</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script src="{{ url_for('static', filename='plugins/moment/moment.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-daygrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-timegrid/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-interaction/main.min.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/fullcalendar-bootstrap/main.min.js') }}"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var Calendar = FullCalendar.Calendar;
+    var Draggable = FullCalendarInteraction.Draggable;
+
+    var containerEl = document.getElementById('external-events');
+    var calendarEl = document.getElementById('calendar');
+    var workgroupSelect = document.getElementById('workgroup-select');
+
+    new Draggable(containerEl, {
+      itemSelector: '.external-event',
+      eventData: function(eventEl) {
+        return {
+          title: eventEl.innerText,
+          backgroundColor: window.getComputedStyle(eventEl ,null).getPropertyValue('background-color'),
+          borderColor: window.getComputedStyle(eventEl ,null).getPropertyValue('background-color'),
+          textColor: window.getComputedStyle(eventEl ,null).getPropertyValue('color'),
+        };
+      }
+    });
+
+    function fetchEvents(workgroupId) {
+      var url = '/calendar/api/events';
+      if (workgroupId) {
+        url += '?workgroup_id=' + workgroupId;
+      }
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          calendar.removeAllEvents();
+          calendar.addEventSource(data);
+        })
+        .catch(error => console.error('Erro ao buscar eventos:', error));
+    }
+
+    var calendar = new Calendar(calendarEl, {
+      plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid' ],
+      header: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      editable: true,
+      droppable: true,
+      eventReceive: function(info) {
+        var event = {
+          title: info.event.title,
+          start: info.event.start.toISOString(),
+          backgroundColor: info.event.backgroundColor,
+          borderColor: info.event.borderColor,
+          textColor: info.event.textColor,
+          workgroup_id: workgroupSelect.value
+        };
+
+        fetch('/calendar/api/events', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(event),
+        })
+        .then(response => response.json())
+        .then(data => {
+          info.event.setProp('id', data.id);
+        })
+        .catch(error => console.error('Erro ao salvar evento:', error));
+      },
+      eventClick: function(info) {
+        $('#eventModal').modal('show');
+        $('#eventTitle').val(info.event.title);
+        $('#eventId').val(info.event.id);
+
+        $('#saveEvent').off('click').on('click', function() {
+          info.event.setProp('title', $('#eventTitle').val());
+
+          var event = {
+            id: info.event.id,
+            title: info.event.title,
+            start: info.event.start.toISOString(),
+            end: info.event.end ? info.event.end.toISOString() : null,
+            backgroundColor: info.event.backgroundColor,
+            borderColor: info.event.borderColor,
+            textColor: info.event.textColor,
+            workgroup_id: workgroupSelect.value
+          };
+
+          fetch('/calendar/api/events/' + info.event.id, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(event),
+          })
+          .then(response => response.json())
+          .then(data => {
+            $('#eventModal').modal('hide');
+          })
+          .catch(error => console.error('Erro ao atualizar evento:', error));
+        });
+
+        $('#deleteEvent').off('click').on('click', function() {
+          fetch('/calendar/api/events/' + info.event.id, {
+            method: 'DELETE',
+          })
+          .then(response => response.json())
+          .then(data => {
+            info.event.remove();
+            $('#eventModal').modal('hide');
+          })
+          .catch(error => console.error('Erro ao excluir evento:', error));
+        });
+      },
+      eventDrop: function(info) {
+        var event = {
+          id: info.event.id,
+          title: info.event.title,
+          start: info.event.start.toISOString(),
+          end: info.event.end ? info.event.end.toISOString() : null,
+          backgroundColor: info.event.backgroundColor,
+          borderColor: info.event.borderColor,
+          textColor: info.event.textColor,
+          workgroup_id: workgroupSelect.value
+        };
+
+        fetch('/calendar/api/events/' + info.event.id, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(event),
+        })
+        .then(response => response.json())
+        .catch(error => console.error('Erro ao atualizar evento:', error));
+      }
+    });
+
+    calendar.render();
+
+    workgroupSelect.addEventListener('change', function() {
+      fetchEvents(this.value);
+    });
+
+    fetchEvents("");  // Fetch initial events for all groups
+
+    var currColor = '#3c8dbc';
+    var colorChooser = document.querySelectorAll('#color-chooser > li > a');
+    colorChooser.forEach(function(chooser) {
+      chooser.addEventListener('click', function(e) {
+        e.preventDefault();
+        currColor = window.getComputedStyle(this ,null).getPropertyValue('color');
+        document.getElementById('add-new-event').style.backgroundColor = currColor;
+        document.getElementById('add-new-event').style.borderColor = currColor;
+      });
+    });
+
+    document.getElementById('add-new-event').addEventListener('click', function(e) {
+      e.preventDefault();
+      var val = document.getElementById('new-event').value;
+      if (val.length == 0) {
+        return;
+      }
+
+      var event = document.createElement('div');
+      event.style.backgroundColor = currColor;
+      event.style.borderColor = currColor;
+      event.style.color = '#fff';
+      event.classList.add('external-event');
+      event.innerText = val;
+      document.getElementById('external-events').prepend(event);
+
+      ini_events($(event));
+
+      document.getElementById('new-event').value = '';
+    });
+
+    function ini_events(ele) {
+      ele.each(function () {
+        var eventObject = {
+          title: $.trim($(this).text()),
+          backgroundColor: $(this).css('background-color'),
+          borderColor: $(this).css('border-color'),
+          textColor: $(this).css('color')
+        }
+        $(this).data('eventObject', eventObject)
+        $(this).draggable({
+          zIndex: 1070,
+          revert: true,
+          revertDuration: 0
+        })
+      })
+    }
+    ini_events($('#external-events div.external-event'));
+  });
+</script>
+{% endblock %}

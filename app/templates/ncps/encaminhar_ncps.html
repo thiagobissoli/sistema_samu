@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Listagem de Ncps</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Data e Hora</th>
+                <th>Descrição</th>
+                <!-- ... outros cabeçalhos de coluna ... -->
+                <th>Ação</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ncp in ncps %}
+            <tr>
+                <td>{{ ncp.id }}</td>
+                <td>{{ ncp.data_hora_registro }}</td>
+                <td>{{ ncp.descricao }}</td>
+                <!-- ... outros campos ... -->
+                <td>
+                    <a href="{{ url_for('edit_ncps_qualidade', id=ncp.id) }}" class="btn btn-warning">Editar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

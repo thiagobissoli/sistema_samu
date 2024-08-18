@@ -1,0 +1,72 @@
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+    <h2>Listagem de Ncps</h2>
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data e Hora do Registro</th>
+                    <th>Descrição</th>
+                    <th>Local</th>
+                    <th>Local Padronizado</th>
+                    <th>ID da Ocorrência</th>
+                    <th>Data e Hora da Ocorrência</th>
+                    <th>Dano</th>
+                    <th>Classificação do Incidente</th>
+                    <th>Sugestão</th>
+                    <th>Procedente</th>
+                    <th>Gestor</th>
+                    <th>Coordenador</th>
+                    <th>Macroprocesso</th>
+                    <th>Segurança do Paciente</th>
+                    <th>Evento Sentinela</th>
+                    <th>Impacto</th>
+                    <th>Probabilidade</th>
+                    <th>Controle</th>
+                    <th>Causa Raiz</th>
+                    <th>Plano de Ação</th>
+                    <th>Ação</th>
+                    <th>Prazo</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ncp in ncps %}
+                <tr>
+                    <td>{{ ncp.id }}</td>
+                    <td>{{ ncp.data_hora_registro }}</td>
+                    <td>{{ ncp.descricao }}</td>
+                    <td>{{ ncp.local }}</td>
+                    <td>{{ ncp.local_padronizado.nome if ncp.local_padronizado else None }}</td>
+                    <td>{{ ncp.id_ocorrencia }}</td>
+                    <td>{{ ncp.data_hora_ocorrencia }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Não'), ('2', 'Leve'), ('3', 'Moderado'), ('4', 'Grave'), ('5', 'Óbito')], ncp.dano) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Near miss'), ('2', 'Circunstância de risco'), ('3', 'Incidente ou evento sem dano'), ('4', 'Evento adverso')], ncp.classificacao_incidente) }}</td>
+                    <td>{{ ncp.sugestao }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Analisando'), ('2', 'Sim'), ('3', 'Não'), ('4', 'Em parte')], ncp.procedente) }}</td>
+                    <td>{{ ncp.gestor.nome if ncp.gestor else None }}</td>
+                    <td>{{ ncp.coordenador.name if ncp.coordenador else None }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'P1 - Abertura de chamado'), ('2', 'P2 - Decisão técnica'), ('3', 'P3 - Empenho'), ('4', 'P4 - Deslocamento ao QTH'), ('5', 'P5 - Atendimento no local'), ('6', 'P6 - Contra-regulação'), ('7', 'P7 - Decisão gestora'), ('8', 'P8 - Deslocamento ao destino'), ('9', 'P9 - Transferência de cuidados'), ('10', 'Prontidão'), ('11', 'Administrativo'), ('12', 'Sistema')], ncp.macroprocesso) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Identificação do paciente'), ('2', 'Cuidado limpo e seguro'), ('3', 'Utilização de catéteres e sondas'), ('4', 'Procedimento seguro'), ('5', 'Administração segura de medicamentos e soluções'), ('6', 'Envolvimento do paciente com sua própria segurança'), ('7', 'Comunicação efetiva'), ('8', 'Prevenção de queda e acidente'), ('9', 'Prevenção de úlceras por pressão'), ('10', 'Segurança na utilização de tecnologia')], ncp.seguranca) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Ato de violação intencional à prontidão'), ('2', 'Endereço errado em chamado prioritário'), ('3', 'Decisão técnica do MR inapropriada (apoio imediato de USA)'), ('4', 'Não empenho de recurso prioritário pelo RO'), ('5', 'Insubordinação às decisões da Central de Regulação'), ('6', 'Deslocamento inadequado com demora no percurso'), ('7', 'Contra-regulação inadequada, incoerente, distorcida ou ausente'), ('8', 'Administração de medicamentos de vigilância sem prescrição médica'), ('9', 'Intercorrência inesperada e crítica após medicação'), ('10', 'Intercorrência inesperada e crítica após procedimento'), ('11', 'Recusa coerente de paciente pelo primeiro destino'), ('12', 'Acidente de trânsito em atendimento'), ('13', 'Abandono de paciente'), ('14', 'Queda de paciente'), ('15', 'Atraso em situação tempo-dependente'), ('16', 'Acidente com material biológico ou pérfuro-cortante'), ('17', 'Agressão física à equipe'), ('18', 'Atendimento em cena insegura')], ncp.sentinela) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Alto'), ('2', 'Baixo')], ncp.impacto) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Alto'), ('2', 'Baixo')], ncp.probabilidade) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Alto'), ('2', 'Baixo')], ncp.controle) }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Fatores do paciente'), ('2', 'Fatores da terefa ou tecnologia'), ('3', 'Fatores individuais (pessoas)'), ('4', 'Fatores do time (equipe)'), ('5', 'Fatores do ambiente de trabalho'), ('6', 'Fatores organizacionais e gerenciais'), ('7', 'Fatores do contexto institucional')], ncp.causa) }}</td>
+                    <td>{{ ncp.plano }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Ações estruturais'), ('2', 'Ações construtivas'), ('3', 'Ações educacionais'), ('4', 'Ações diciplinares'), ('5', 'Ações administrativas')], ncp.acao) }}</td>
+                    <td>{{ ncp.prazo }}</td>
+                    <td>{{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Analisando'), ('2', 'Concluído Análise'), ('3', 'Arquivado'), ('4', 'Encaminhado ao gestor compedente de outra instituição')], ncp.status) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>

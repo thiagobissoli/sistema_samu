@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %} Lista de Locais {% endblock %}
+
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+{% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Locais</h1>
+                <br>
+                <a href="{{ url_for('local.create_local') }}" class="btn btn-primary mb-3">Criar Novo Local</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Lista de Locais</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="locais" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for local in locais %}
+                            <tr>
+                                <td>{{ local.nome }}</td>
+                                <td>
+                                    <a href="{{ url_for('local.edit_local', id=local.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                    <form action="{{ url_for('local.delete_local', id=local.id) }}" method="post" style="display: inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir o local {{ local.nome }}?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Apagar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Ação</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+</section>
+<!-- /.content -->
+
+{% endblock %}
+
+{% block script %}
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
+<script>
+  $(function () {
+    $("#locais").DataTable();
+  });
+</script>
+{% endblock %}

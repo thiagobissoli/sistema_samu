@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Relatório de NCPS{% endblock %}
+
+{% macro get_label_for_choice_value(choices, value) %}
+    {% for choice_value, choice_label in choices %}
+        {% if choice_value == value %}
+            {{ choice_label }}
+        {% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Relatório de NCPS</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Filtrar por Gestor e Data/Hora do Registro</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.gestor.label }}
+                                {{ form.gestor(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.start_date.label }}
+                                {{ form.start_date(class="form-control", type="datetime-local") }}
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                {{ form.end_date.label }}
+                                {{ form.end_date(class="form-control", type="datetime-local") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.submit(class="btn btn-success") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if ncps_list %}
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Relatório de NCPS</h3>
+                <button class="btn btn-primary float-right" onclick="generatePDF()">Imprimir Relatório</button>
+            </div>
+            <div class="card-body">
+                <div id="report-content">
+
+                    {% for ncp in ncps_list %}
+                    <p><strong>ID da Notificação: {{ ncp.id }}</strong></p>
+                    <p>Data/Hora do Registro: {{ ncp.data_hora_registro.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p>{{ ncp.descricao }}</p>
+                    <p>Local: {{ ncp.local_padronizado.nome if ncp.local_padronizado else 'N/A' }}</p>
+                    <p>ID do Atendimento (SAMU): {{ ncp.id_ocorrencia }} - Data/Hora: {{ ncp.data_hora_ocorrencia.strftime('%d/%m/%Y %H:%M') }}</p>
+                    <p>Classificação do Incidente: {{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Near miss'), ('2', 'Circunstância de risco'), ('3', 'Incidente ou evento sem dano'), ('4', 'Evento adverso')], ncp.classificacao_incidente) }}</p>
+                    <p>Dano: {{ get_label_for_choice_value([('0', 'Aguardando análise'), ('1', 'Não'), ('2', 'Leve'), ('3', 'Moderado'), ('4', 'Grave'), ('5', 'Óbito')], ncp.dano) }}</p>
+                    <hr>
+                    {% endfor %}
+
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script>
+    async function generatePDF() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const logoUrl = "{{ url_for('static', filename='dist/img/logo.png') }}";
+
+        // Load the logo image
+        const response = await fetch(logoUrl);
+        const blob = await response.blob();
+        const reader = new FileReader();
+
+        reader.onloadend = function () {
+            const logoBase64 = reader.result;
+            let pageNumber = 1;
+
+            function addPageNumber() {
+                doc.setFontSize(10);
+                doc.text('Página ' + pageNumber, 105, 290, { align: 'center' });
+                pageNumber++;
+            }
+
+            function addHeader() {
+                const logoWidth = 8;
+                const logoHeight = 8; // Adjust the height to maintain the aspect ratio
+                doc.addImage(logoBase64, 'PNG', 10, 5, logoWidth, logoHeight); // Add the logo with correct proportions
+                doc.setFontSize(14);
+                doc.text('Relatório de NCPS', 20, 10);
+                doc.line(10, 15, 200, 15); // Add line below the header
+            }
+
+            addHeader();
+            addPageNumber();
+
+            let yPosition = 20;
+            const lineHeight = 5;
+            const maxWidth = 180;
+
+            document.querySelectorAll('#report-content h2, #report-content p, #report-content h4, #report-content hr').forEach(element => {
+                let text = element.innerText;
+                let lines = doc.splitTextToSize(text, maxWidth);
+
+                lines.forEach(line => {
+                    if (element.tagName === 'H2') {
+                        doc.setFontSize(12);
+                    } else if (element.tagName === 'P' || element.tagName === 'H4') {
+                        doc.setFontSize(10);
+                    }
+                    doc.text(line, 10, yPosition);
+                    yPosition += lineHeight;
+
+                    if (yPosition > 280) {
+                        doc.addPage();
+                        addHeader();
+                        addPageNumber();
+                        yPosition = 20;
+                    }
+                });
+
+                if (element.tagName === 'HR') {
+                    yPosition += 5;
+                    doc.line(10, yPosition, 200, yPosition);
+                    yPosition += 5;
+                }
+
+                if (yPosition > 280) {
+                    doc.addPage();
+                    addHeader();
+                    addPageNumber();
+                    yPosition = 20;
+                }
+            });
+
+            doc.save('relatorio_ncps.pdf');
+        };
+
+        reader.readAsDataURL(blob);
+    }
+</script>
+
+{% endblock %}

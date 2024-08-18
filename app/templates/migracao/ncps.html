@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Ncps</title>
+    <!-- Adicione aqui suas referências CSS (Bootstrap, etc.) -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Gerenciamento de Ncps</h1>
+
+        <!-- Seção para importação de dados -->
+        <h2>Importar Dados de Ncps</h2>
+        <form action="{{ url_for('migracao.import_ncps') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Escolha o arquivo CSV para importar</label>
+                <input type="file" name="file" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Importar</button>
+        </form>
+
+        <!-- Exibe mensagens flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Lista de Ncps -->
+        <h2 class="mt-5">Lista de Ncps</h2>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Data de Registro</th>
+                    <th>Descrição</th>
+                    <th>Local</th>
+                    <th>Ocorrência</th>
+                    <th>Gestor</th>
+                    <th>Coordenador</th>
+                    <!-- Adicione outras colunas necessárias -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for ncps in ncps_list %}
+                <tr>
+                    <td>{{ ncps.id }}</td>
+                    <td>{{ ncps.data_hora_registro.strftime('%d/%m/%Y %H:%M') }}</td>
+                    <td>{{ ncps.descricao }}</td>
+                    <td>{{ ncps.local }}</td>
+                    <td>{{ ncps.id_ocorrencia }}</td>
+                    <td>{{ ncps.gestor.nome if ncps.gestor else 'N/A' }}</td>
+                    <td>{{ ncps.coordenador.name if ncps.coordenador else 'N/A' }}</td>
+                    <!-- Outras colunas podem ser adicionadas aqui -->
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Adicione aqui suas referências JS (jQuery, Bootstrap, etc.) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
