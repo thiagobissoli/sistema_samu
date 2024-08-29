@@ -8,7 +8,5 @@ class Config:
     MAIL_SERVER = 'smtp.gmail.com'
     MAIL_PORT = 587
     MAIL_USE_TLS = True
-#    MAIL_USERNAME = 'thiagosbissoli@gmail.com'
-    MAIL_USERNAME = 'sistemawebsamu@gmail.com'
-#    MAIL_PASSWORD = 'zlxhwbthdklqzdkb' # thiagobissoli
-    MAIL_PASSWORD = 'nlji ikwy qmoh lupw' # sistema samu
+    MAIL_USERNAME = 'email@gmail.com'
+    MAIL_PASSWORD = 'xxxx xxxx xxxx xxxx'
