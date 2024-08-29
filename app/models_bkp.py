@@ -216,17 +216,16 @@ class KanbanTask(db.Model):
     priority = db.Column(db.String(50))
     column_id = db.Column(db.Integer, db.ForeignKey('kanban_column.id'), nullable=False)
 
+
 class AlertaViatura(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     data_hora = db.Column(db.DateTime, default=datetime.utcnow)
     viatura_id = db.Column(db.Integer, db.ForeignKey('viatura.id'), nullable=False)
-    equipe_id = db.Column(db.Integer, db.ForeignKey('equipe.id'), nullable=False)  # Novo campo
     descricao = db.Column(db.String(100), nullable=False)
     prioridade = db.Column(db.String(10), nullable=False)
     status = db.Column(db.String(10), nullable=False)
 
     viatura = db.relationship('Viatura', backref='alertas')
-    equipe = db.relationship('Equipe', backref='alertas_viatura')  # Relacionamento com Equipe
 
     def __repr__(self):
         return f"<AlertaViatura {self.id} - {self.viatura.vtr}>"

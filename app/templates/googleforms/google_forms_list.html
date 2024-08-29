@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %} Lista de Google Forms {% endblock %}
+
+{% block head %}
+  <!-- DataTables -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.css') }}">
+{% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Google Forms</h1>
+                <br>
+                <a href="{{ url_for('googleforms.new_google_form') }}" class="btn btn-primary">Adicionar Novo Formulário</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Lista de Google Forms</h3>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="google_forms" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Formulário</th>
+                                <th>Descrição</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in forms %}
+                            <tr>
+                                <td>{{ form.id }}</td>
+                                <td>{{ form.formulario }}</td>
+                                <td>{{ form.descricao }}</td>
+                                <td>
+                                    <a href="{{ url_for('googleforms.view_google_form', id=form.id) }}" class="btn btn-info btn-sm" target="_blank">Visualizar</a>
+                                    {% if current_user.is_authenticated and current_user.role %}
+                                        {% if current_user.role.name in ['Administrador', 'Coordenador'] %}
+                                            <a href="{{ url_for('googleforms.edit_google_form', id=form.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                            <form action="{{ url_for('googleforms.delete_google_form', id=form.id) }}" method="post" style="display:inline;">
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar este formulário?');">Deletar</button>
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<!-- DataTables -->
+<script src="{{ url_for('static', filename='plugins/datatables/jquery.dataTables.js') }}"></script>
+<script src="{{ url_for('static', filename='plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
+<script>
+  $(function () {
+    $("#google_forms").DataTable({
+      "paging": true,
+      "lengthChange": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+    });
+  });
+</script>
+{% endblock %}

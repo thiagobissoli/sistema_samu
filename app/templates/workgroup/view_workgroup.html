@@ -18,14 +18,6 @@
         <div class="card card-default">
             <div class="card-header">
                 <h3 class="card-title">Detalhes do Grupo de Trabalho</h3>
-                <div class="card-tools">
-                    <a href="{{ url_for('workgroup.edit_workgroup', id=workgroup.id) }}" class="btn btn-tool">
-                        <i class="fas fa-pen"></i> Editar
-                    </a>
-                    <a href="{{ url_for('workgroup.add_users_workgroup', id=workgroup.id) }}" class="btn btn-tool">
-                        <i class="fas fa-user-plus"></i> Inserir Usuários
-                    </a>
-                </div>
             </div>
             <div class="card-body">
                 <div class="form-group">
@@ -48,7 +40,9 @@
                 </ul>
             </div>
             <div class="card-footer">
-                <a href="{{ url_for('workgroup.list_workgroups') }}" class="btn btn-primary">Voltar</a>
+                <a href="{{ url_for('workgroup.edit_workgroup', id=workgroup.id) }}" class="btn btn-success col-md-2">Editar</a>
+                <a href="{{ url_for('workgroup.add_users_workgroup', id=workgroup.id) }}" class="btn btn-secondary col-md-2">Inserir Usuários</a>
+                <a href="{{ url_for('workgroup.list_workgroups') }}" class="btn btn-primary col-md-2">Voltar</a>
             </div>
         </div>
     </div>

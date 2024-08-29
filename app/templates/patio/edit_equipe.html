@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>{{ title }}</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">{{ title }}</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.equipe.label }}
+                                {{ form.equipe(class="form-control") }}
+                                {% if form.equipe.errors %}
+                                    <ul class="errors">
+                                        {% for error in form.equipe.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.tipo_suporte.label }}
+                                {{ form.tipo_suporte(class="form-control") }}
+                                {% if form.tipo_suporte.errors %}
+                                    <ul class="errors">
+                                        {% for error in form.tipo_suporte.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <br>
+                                {{ form.submit(class="btn btn-success col-md-3") }}
+                                <a href="{{ url_for('patio.list_equipes') }}" class="btn btn-primary col-md-3">Voltar</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

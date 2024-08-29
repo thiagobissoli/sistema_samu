@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %} Portaria {% endblock %}
+
 {% block head %}
     <meta http-equiv="refresh" content="60">
 {% endblock %}
@@ -46,7 +48,8 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>Ambulância</th>
+                                <th>Equipe</th>
+                                <th>Viatura</th>
                                 <th>Entrada</th>
                                 <th>Tempo Estacionado</th>
                                 <th>Saída</th>
@@ -55,6 +58,7 @@
                         <tbody>
                             {% for record in parked_viaturas %}
                             <tr>
+                                <td>{{ record.equipe.equipe }}</td>
                                 <td>{{ record.viatura.vtr }}</td>
                                 <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                 <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>

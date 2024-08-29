@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 
-{% block title %} Supervisão {% endblock %}
-
 {% block head %}
     <meta http-equiv="refresh" content="60">
 {% endblock %}
@@ -29,8 +27,8 @@
                 <form method="post" class="form-inline">
                     {{ previsao_form.hidden_tag() }}
                     <div class="form-group mr-3">
-                        {{ previsao_form.equipe.label }}
-                        {{ previsao_form.equipe(class="form-control ml-2") }}
+                        {{ previsao_form.viatura.label }}
+                        {{ previsao_form.viatura(class="form-control ml-2") }}
                     </div>
                     <div class="form-group mr-3">
                         {{ previsao_form.hora_chegada.label }}
@@ -53,7 +51,6 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>Equipe</th>
                                 <th>Viatura</th>
                                 <th>Horário Previsto de Chegada</th>
                                 <th>Serviço Previsto</th>
@@ -63,7 +60,6 @@
                         <tbody>
                             {% for previsao in previsoes %}
                             <tr>
-                                <td>{{ previsao.viatura.equipe.equipe }}</td>
                                 <td>{{ previsao.viatura.vtr }}</td>
                                 <td>{{ previsao.hora_chegada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                 <td>
@@ -81,7 +77,7 @@
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="5">Nenhuma previsão de chegada de ambulância!</td>
+                                <td colspan="4">Nenhuma previsão de chegada de ambulância!</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -99,7 +95,6 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>Equipe</th>
                                 <th>Viatura</th>
                                 <th>Entrada</th>
                                 <th>Tempo Estacionado</th>
@@ -109,7 +104,6 @@
                         <tbody>
                             {% for record in parked_viaturas %}
                             <tr>
-                                <td>{{ record.equipe.equipe }}</td>
                                 <td>{{ record.viatura.vtr }}</td>
                                 <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                 <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>
@@ -144,7 +138,6 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>Equipe</th>
                                 <th>Viatura</th>
                                 <th>Descrição</th>
                                 <th>Prioridade</th>
@@ -154,7 +147,6 @@
                         <tbody>
                             {% for alerta in alertas %}
                             <tr>
-                                <td>{{ alerta.equipe.equipe }}</td>
                                 <td>{{ alerta.viatura.vtr }}</td>
                                 <td>{{ alerta.descricao }}</td>
                                 <td>{{ alerta.prioridade }}</td>

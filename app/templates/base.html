@@ -53,10 +53,7 @@
         <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
       </li>
         {% if current_user.is_authenticated and current_user.role %}
-          {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Surpevisor', 'Usuario'] %}
-            <li class="nav-item d-none d-sm-inline-block">
-              <a href="{{ url_for('main.index1') }}" class="nav-link">Principal</a>
-            </li>
+          {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Supervisor', 'Usuario'] %}
             <li class="nav-item d-none d-sm-inline-block">
               <a href="{{ url_for('calendar.dash_calendar') }}" class="nav-link">Calendário</a>
             </li>
@@ -108,13 +105,25 @@
           {% endmacro %}
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Surpevisor', 'Usuario'] %}
-              {{ nav_link('main.index1', url_for('main.index1'), 'fas fa-house nav-icon', 'Principal') }}
+            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Supervisor', 'Usuario'] %}
+              <li class="nav-item has-treeview {% if 'main.' in request.endpoint %}menu-open{% endif %}">
+                <a href="#" class="nav-link {% if 'main.' in request.endpoint %}active{% endif %}">
+                  <i class="nav-icon fas fa-house"></i>
+                  <p>
+                    Principal
+                    <i class="right fas fa-angle-left"></i>
+                  </p>
+                </a>
+                <ul class="nav nav-treeview">
+                  {{ nav_link('main.index1', url_for('main.index1'), 'far fa-circle nav-icon', 'Dashboard v1') }}
+                  {{ nav_link('main.index2', url_for('main.index2'), 'far fa-circle nav-icon', 'Dashboard v2') }}
+                </ul>
+              </li>
             {% endif %}
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Surpevisor', 'Usuario'] %}
+            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Supervisor', 'Usuario'] %}
               <li class="nav-item has-treeview {% if 'calendar.' in request.endpoint or 'workgroup.' in request.endpoint %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if 'calendar.' in request.endpoint or 'workgroup.' in request.endpoint %}active{% endif %}">
                   <i class="nav-icon far fa-calendar-alt"></i>
@@ -132,7 +141,7 @@
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Surpevisor', 'Usuario'] %}
+            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Supervisor', 'Usuario'] %}
               <li class="nav-item has-treeview {% if 'auth.' in request.endpoint %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if 'auth.' in request.endpoint %}active{% endif %}">
                   <i class="nav-icon fas fa-users"></i>
@@ -157,7 +166,7 @@
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Qualidade', 'Coordenador', 'Surpevisor', 'Usuario'] %}
+            {% if current_user.role.name in ['Administrador', 'Qualidade', 'Coordenador', 'Supervisor', 'Usuario'] %}
               <li class="nav-item has-treeview {% if 'ncps.' in request.endpoint or 'gestor.' in request.endpoint or 'local.' in request.endpoint %}menu-open{% endif %}">
                 <a href="#" class="nav-link {% if 'ncps.' in request.endpoint or 'gestor.' in request.endpoint or 'local.' in request.endpoint %}active{% endif %}">
                   <i class="nav-icon fas fa-copy"></i>
@@ -186,9 +195,9 @@
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Coordenador', 'Surpevisor', 'Portaria'] %}
-              <li class="nav-item has-treeview {% if 'patio.' in request.endpoint %}menu-open{% endif %}">
-                <a href="#" class="nav-link {% if 'patio.' in request.endpoint %}active{% endif %}">
+            {% if current_user.role.name in ['Administrador', 'Coordenador', 'Supervisor', 'Portaria', 'Qualidade'] %}
+              <li class="nav-item has-treeview {% if 'patio.' in request.endpoint or 'viatura.' in request.endpoint or 'equipe.' in request.endpoint %}menu-open{% endif %}">
+                <a href="#" class="nav-link {% if 'patio.' in request.endpoint or 'viatura.' in request.endpoint or 'equipe.' in request.endpoint %}active{% endif %}">
                   <i class="nav-icon fas fa-road"></i>
                   <p>
                     Pátio
@@ -199,7 +208,16 @@
                   {{ nav_link('patio.portaria', url_for('patio.portaria'), 'far fa-circle nav-icon', 'Portaria') }}
                   {{ nav_link('patio.supervisao', url_for('patio.supervisao'), 'far fa-circle nav-icon', 'Supervisão') }}
                   {{ nav_link('patio.checkpoint', url_for('patio.checkpoint'), 'far fa-circle nav-icon', 'Checkpoint') }}
-                  {{ nav_link('patio.relatorio', url_for('patio.relatorio'), 'far fa-circle nav-icon', 'Relatório') }}
+
+                  {% if current_user.is_authenticated and current_user.role %}
+                    {% if current_user.role.name in ['Administrador', 'Coordenador', 'Qualidade'] %}
+                      {{ nav_link('equipe.list_equipes', url_for('equipe.list_equipes'), 'far fa-circle nav-icon', 'Equipes') }}
+                      {{ nav_link('viatura.list_viaturas', url_for('viatura.list_viaturas'), 'far fa-circle nav-icon', 'Viaturas') }}
+                      {{ nav_link('viatura.historico_viaturas', url_for('viatura.historico_viaturas'), 'far fa-circle nav-icon', 'Viaturas e Equipes') }}
+                      {{ nav_link('patio.relatorio', url_for('patio.relatorio'), 'far fa-circle nav-icon', 'Relatório') }}
+                    {% endif %}
+                  {% endif %}
+
                 </ul>
               </li>
             {% endif %}
@@ -221,20 +239,20 @@
               {% if current_user.is_authenticated and current_user.role %}
                 {% if current_user.role.name in ['Administrador', 'Coordenador', 'Supervisor'] %}
                   {{ nav_link('censo.censo_mestre', url_for('censo.censo_mestre'), 'far fa-circle nav-icon', 'Registar Censo - Adm') }}
+                  {{ nav_link('hospital.list_hospitais', url_for('hospital.list_hospitais'), 'fas fa-house-medical nav-icon', 'Hospitais') }}
                 {% endif %}
               {% endif %}
             </ul>
           </li>
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Coordenador'] %}
-              {{ nav_link('viatura.list_viaturas', url_for('viatura.list_viaturas'), 'fas fa-car nav-icon', 'Viaturas') }}
-              {{ nav_link('hospital.list_hospitais', url_for('hospital.list_hospitais'), 'fas fa-house-medical nav-icon', 'Hospitais') }}
+            {% if current_user.role.name in ['Administrador', 'Coordenador', 'Supervisor', 'Qualidade'] %}
+              {{ nav_link('googleforms.google_forms', url_for('googleforms.list_google_forms'), 'fas fa-pen nav-icon', 'Formulários') }}
             {% endif %}
           {% endif %}
 
           {% if current_user.is_authenticated and current_user.role %}
-            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Surpevisor', 'Usuario'] %}
+            {% if current_user.role.name in ['Administrador', 'Portaria', 'Qualidade', 'Assessor', 'Coordenador', 'Supervisor', 'Usuario'] %}
               {{ nav_link('kanban.list_projects', url_for('kanban.list_projects'), 'fas fa-columns nav-icon', 'Kanban') }}
             {% endif %}
           {% endif %}
@@ -330,7 +348,7 @@
 
 <!-- Toastr -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 
 <script src="{{ url_for('static', filename='plugins/jquery/jquery.min.js') }}"></script>

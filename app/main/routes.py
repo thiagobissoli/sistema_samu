@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import login_required, current_user
 from app.models import ControlePark, Previsao, CalendarEvent
-from app.models import User, Viatura, ControlePark, Previsao, Local, Gestor, Ncps, Role
+from app.models import User, Viatura, ControlePark, Previsao, Local, Gestor, Ncps, Role, AlertaViatura
 from datetime import datetime
 from dateutil.parser import isoparse
 import pytz
@@ -24,6 +24,7 @@ def index1():
     # Filtrando os controles que têm hora_saida no dia atual
     controles = ControlePark.query.filter(ControlePark.hora_saida.is_(None)).all()
     previsoes = Previsao.query.filter_by(finalizacao=0).all()
+    alertas = AlertaViatura.query.filter_by(status="Pendente").all()
 
     # Filtrando todos os controles no dia atual para o gráfico
     controles_grafico = ControlePark.query.all()
@@ -48,7 +49,7 @@ def index1():
         if record.hora_entrada.tzinfo is None:
             record.hora_entrada = local_tz.localize(record.hora_entrada)
 
-    return render_template('main/index1.html', controles=controles, previsoes=previsoes, percentages=percentages, current_time=current_time)
+    return render_template('main/index1.html', controles=controles, previsoes=previsoes, alertas=alertas, percentages=percentages, current_time=current_time)
 
 @main.route('/index2')
 @login_required
@@ -80,6 +81,7 @@ def index2():
     for record in controles:
         if record.hora_entrada.tzinfo is None:
             record.hora_entrada = local_tz.localize(record.hora_entrada)
+        if record.hora_saida and record.hora_saida.tzinfo is None:
             record.hora_saida = local_tz.localize(record.hora_saida)
 
     return render_template('main/index2.html', controles=controles, previsoes=previsoes, percentages=percentages, current_time=current_time)
@@ -117,6 +119,7 @@ def import_all_from_csv(session, input_directory):
         print(f"Dados importados com sucesso para a tabela {model.__tablename__}")
 
 @main.route('/import', methods=['POST'])
+@login_required
 def import_data():
     input_directory = 'migration_data'
     session = db.session

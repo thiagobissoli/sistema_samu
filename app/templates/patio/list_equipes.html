@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %} Lista de Equipes {% endblock %}
+
+{% block content %}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Equipes</h1>
+                <br>
+                <a href="{{ url_for('patio.create_equipe') }}" class="btn btn-primary">Adicionar Nova Equipe</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="content">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                  <h3 class="card-title">Lista de Equipes</h3>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Equipe</th>
+                                <th>Tipo de Suporte</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipe in equipes %}
+                            <tr>
+                                <td>{{ equipe.id }}</td>
+                                <td>{{ equipe.equipe }}</td>
+                                <td>{{ equipe.tipo_suporte }}</td>
+                                <td>
+                                    <a href="{{ url_for('patio.edit_equipe', id=equipe.id) }}" class="btn btn-warning btn-sm">Editar</a>
+                                    <form action="{{ url_for('patio.delete_equipe', id=equipe.id) }}" method="post" style="display:inline;">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja deletar esta equipe?');">Deletar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

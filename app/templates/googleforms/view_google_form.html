@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %} Visualizar Google Form {% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ google_form.descricao }}</h1>
+    <div class="card card-default">
+        <div class="card-header">
+            <h3 class="card-title">{{ google_form.formulario }}</h3>
+        </div>
+        <div class="card-body">
+            <iframe src="{{ google_form.url }}" width="100%" height="600px"></iframe>
+        </div>
+        <div class="card-footer">
+            <a href="{{ url_for('googleforms.list_google_forms') }}" class="btn btn-primary">Voltar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

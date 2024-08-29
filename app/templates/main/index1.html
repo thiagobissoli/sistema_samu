@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %} Dashboard v1 {% endblock %}
+
 {% block head %}
-    <meta http-equiv="refresh" content="15;url={{ url_for('main.index2') }}">
+    <meta http-equiv="refresh" content="30">
 
     <meta http-equiv="refresh" content="60">
     <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
@@ -46,6 +48,7 @@
                             <table id="previsaoTableQ" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Equipe</th>
                                         <th>Viatura</th>
                                         <th>Horário Previsto de Chegada</th>
                                         <th>Serviço Previsto</th>
@@ -54,6 +57,7 @@
                                 <tbody>
                                     {% for previsao in previsoes %}
                                     <tr>
+                                        <td>{{ previsao.viatura.equipe.equipe }}</td>
                                         <td>{{ previsao.viatura.vtr }}</td>
                                         <td>{{ previsao.hora_chegada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                         <td>
@@ -87,6 +91,7 @@
                             <table id="controleTableQ" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Equipe</th>
                                         <th>Viatura</th>
                                         <th>Entrada</th>
                                         <th>Tempo Estacionado</th>
@@ -96,6 +101,7 @@
                                 <tbody>
                                     {% for record in controles %}
                                     <tr>
+                                        <td>{{ record.viatura.equipe.equipe }}</td>
                                         <td>{{ record.viatura.vtr }}</td>
                                         <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                         <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>
@@ -119,6 +125,47 @@
                 </div>
             </div>
         </div>
+
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">Alertas das Viaturas</h3>
+            </div>
+            <div class="card-body">
+                <div style="overflow-x: auto;">
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Equipe</th>
+                                <th>Viatura</th>
+                                <th>Descrição</th>
+                                <th>Prioridade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for alerta in alertas %}
+                            <tr>
+                                <td>{{ alerta.viatura.equipe.equipe }}</td>
+                                <td>{{ alerta.viatura.vtr }}</td>
+                                <td>{{ alerta.descricao }}</td>
+                                <td>{{ alerta.prioridade }}</td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5">Nenhum alerta de viatura registrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+
 
     </div>
 </section>

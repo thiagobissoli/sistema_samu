@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %} Dashboard v2 {% endblock %}
+
 {% block head %}
-    <meta http-equiv="refresh" content="15;url={{ url_for('main.index1') }}">
+    <meta http-equiv="refresh" content="60">
 
     <meta http-equiv="refresh" content="60">
     <link rel="stylesheet" href="{{ url_for('static', filename='plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
@@ -47,6 +49,7 @@
                             <table id="controleTableQ" class="table table-bordered table-striped">
                                 <thead>
                                     <tr>
+                                        <th>Equipe</th>
                                         <th>Viatura</th>
                                         <th>Entrada</th>
                                         <th>Tempo Estacionado</th>
@@ -55,9 +58,16 @@
                                 <tbody>
                                     {% for record in controles %}
                                     <tr>
+                                        <td>{{ record.equipe.equipe }}</td>
                                         <td>{{ record.viatura.vtr }}</td>
                                         <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
-                                        <td>{{ ((record.hora_saida - record.hora_entrada).seconds // 60) }} minutos</td>
+                                        <td>
+                                            {% if record.hora_saida %}
+                                                {{ ((record.hora_saida - record.hora_entrada).seconds // 60) }} minutos
+                                            {% else %}
+                                                Ainda estacionado
+                                            {% endif %}
+                                        </td>
                                     </tr>
                                     {% else %}
                                     <tr>

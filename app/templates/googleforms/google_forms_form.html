@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %} {{ form.formulario.label.text }} {% endblock %}
+
+{% block content %}
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>{{ form.formulario.label.text }}</h1>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="card card-default">
+            <div class="card-header">
+                <h3 class="card-title">{{ 'Adicionar Novo Google Form' if form.formulario.data == '' else 'Editar Google Form' }}</h3>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                {{ form.formulario.label }}
+                                {{ form.formulario(class="form-control") }}
+                                {% if form.formulario.errors %}
+                                    <ul class="errors">
+                                        {% for error in form.formulario.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.descricao.label }}
+                                {{ form.descricao(class="form-control") }}
+                                {% if form.descricao.errors %}
+                                    <ul class="errors">
+                                        {% for error in form.descricao.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.url.label }}
+                                {{ form.url(class="form-control") }}
+                                {% if form.url.errors %}
+                                    <ul class="errors">
+                                        {% for error in form.url.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                {{ form.roles.label }}
+                                {{ form.roles(class="form-control") }}
+                                {% if form.roles.errors %}
+                                    <ul class="errors">
+                                        {% for error in form.roles.errors %}
+                                        <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% endif %}
+                            </div>
+                            <div class="form-group">
+                                <br>
+                                {{ form.submit(class="btn btn-success col-md-3") }}
+                                <a href="{{ url_for('googleforms.list_google_forms') }}" class="btn btn-primary col-md-3">Voltar</a>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer">
+                <p></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

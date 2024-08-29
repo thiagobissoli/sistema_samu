@@ -1,5 +1,5 @@
 # /app/__init__.py
-from flask import Flask
+from flask import Flask, jsonify, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
@@ -37,14 +37,29 @@ def create_app():
     from .auth import bp as auth_bp
     app.register_blueprint(auth_bp, url_prefix='/auth')
 
+    from .calendar import bp as calendar_bp
+    app.register_blueprint(calendar_bp, url_prefix='/calendar')
+
+    from app.censo import bp as censo_bp
+    app.register_blueprint(censo_bp, url_prefix='/censo')
+
+    from app.equipe import bp as equipe_bp
+    app.register_blueprint(equipe_bp, url_prefix='/equipe')
+
     from .gestor import bp as gestor_bp
     app.register_blueprint(gestor_bp, url_prefix='/gestor')
 
-    from .viatura import bp as viatura_bp
-    app.register_blueprint(viatura_bp, url_prefix='/viatura')
+    from app.googleforms import bp as googleforms_bp
+    app.register_blueprint(googleforms_bp, url_prefix='/googleforms')
+
+    from app.hospital import bp as hospital_bp
+    app.register_blueprint(hospital_bp, url_prefix='/hospital')
 
     from .local import bp as local_bp
     app.register_blueprint(local_bp, url_prefix='/local')
+
+    from app.migracao import bp as migracao_bp
+    app.register_blueprint(migracao_bp, url_prefix='/migracao')
 
     from .ncps import bp as ncps_bp
     app.register_blueprint(ncps_bp, url_prefix='/ncps')
@@ -52,23 +67,14 @@ def create_app():
     from .patio import bp as patio_bp
     app.register_blueprint(patio_bp, url_prefix='/patio')
 
-    from .calendar import bp as calendar_bp
-    app.register_blueprint(calendar_bp, url_prefix='/calendar')
-
-    from app.censo import bp as censo_bp
-    app.register_blueprint(censo_bp, url_prefix='/censo')
-
-    from app.hospital import bp as hospital_bp
-    app.register_blueprint(hospital_bp, url_prefix='/hospital')
+    from .viatura import bp as viatura_bp
+    app.register_blueprint(viatura_bp, url_prefix='/viatura')
 
     from app.workgroup import bp as workgroup_bp
     app.register_blueprint(workgroup_bp, url_prefix='/workgroup')
 
     from app.kanban import bp as kanban_bp
     app.register_blueprint(kanban_bp, url_prefix='/kanban')
-
-    from app.migracao import bp as migracao_bp
-    app.register_blueprint(migracao_bp, url_prefix='/migracao')
 
     with app.app_context():
         inspector = inspect(db.engine)

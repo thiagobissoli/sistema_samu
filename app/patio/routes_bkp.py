@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, request, jsonify, flash, s
 from flask_login import login_required, current_user
 from . import bp as patio
 from .forms import ControleParkForm, PrevisaoForm, AlertaViaturaForm, EquipeForm
-from ..models import ControlePark, Previsao, Viatura, AlertaViatura, Equipe, HistoricoViaturaEquipe
+from ..models import ControlePark, Previsao, Viatura, AlertaViatura, Equipe
 from .. import db
 from datetime import datetime
 import pytz
@@ -57,18 +57,52 @@ def supervisao():
         return redirect(url_for('patio.supervisao'))
 
     if 'previsao_submit' in request.form and previsao_form.validate():
-        equipe_id = previsao_form.equipe.data
-        # Recupere a viatura associada à equipe selecionada
-        viatura = Viatura.query.filter_by(equipe_id=equipe_id).first()
-
-        if not viatura:
-            flash('Nenhuma viatura associada à equipe selecionada!', 'danger')
-            return redirect(url_for('patio.supervisao'))
-
-        new_previsao = Previsao(viatura_id=viatura.id, hora_chegada=previsao_form.hora_chegada.data)
+        viatura_id = previsao_form.viatura.data.id
+        new_previsao = Previsao(viatura_id=viatura_id, hora_chegada=previsao_form.hora_chegada.data)
         db.session.add(new_previsao)
         db.session.commit()
-        flash('Previsão registrada com sucesso!', 'success')
+        return redirect(url_for('patio.supervisao'))
+
+    # Consultar previsões e viaturas estacionadas
+    previsoes = Previsao.query.filter_by(finalizacao=0).all()
+    parked_viaturas = ControlePark.query.filter_by(hora_saida=None).all()
+    alertas = AlertaViatura.query.filter_by(status="Pendente").all()
+
+    # Ajustar o timezone para viaturas estacionadas
+    for record in parked_viaturas:
+        if record.hora_entrada.tzinfo is None:
+            record.hora_entrada = brasilia_tz.localize(record.hora_entrada)
+
+    return render_template('patio/supervisao.html',
+                           controle_form=controle_form,
+                           previsao_form=previsao_form,
+                           previsoes=previsoes,
+                           parked_viaturas=parked_viaturas,
+                           alertas=alertas,  # Passar os alertas para o template
+                           datetime=datetime,
+                           current_time=current_time_brasilia()
+                           )
+
+
+
+@patio.route('/supervisao_bkp', methods=['GET', 'POST'])
+@login_required
+@role_required('Administrador', 'Coordenador', 'Supervisor')
+def supervisao_bkp():
+    controle_form = ControleParkForm()
+    previsao_form = PrevisaoForm()
+
+    if 'controle_submit' in request.form and controle_form.validate():
+        new_control = ControlePark(viatura=controle_form.viatura.data)
+        db.session.add(new_control)
+        db.session.commit()
+        return redirect(url_for('patio.supervisao'))
+
+    if 'previsao_submit' in request.form and previsao_form.validate():
+        viatura_id = previsao_form.viatura.data.id
+        new_previsao = Previsao(viatura_id=viatura_id, hora_chegada=previsao_form.hora_chegada.data)
+        db.session.add(new_previsao)
+        db.session.commit()
         return redirect(url_for('patio.supervisao'))
 
     # Consultar previsões e viaturas estacionadas
@@ -250,15 +284,9 @@ def portaria():
     if form.validate_on_submit():
         viatura = form.viatura.data
 
-        # Verifica se a viatura tem uma equipe associada
-        if not viatura.equipe:
-            flash('A viatura selecionada não possui uma equipe associada.', 'danger')
-            return redirect(url_for('patio.portaria'))
-
         # Cria um novo controle para a viatura que está entrando
         new_control = ControlePark(
             viatura=viatura,
-            equipe=viatura.equipe,  # Associa a equipe da viatura ao controle
             farmacia=0,
             limpeza=0,
             cme=0,
@@ -302,7 +330,6 @@ def portaria():
         datetime=datetime,
         current_time=current_time_brasilia()
     )
-
 
 
 @patio.route('/relatorio')
@@ -408,20 +435,8 @@ def alerta_viatura():
     alerta_form = AlertaViaturaForm()
 
     if alerta_form.validate_on_submit():
-        equipe = Equipe.query.get(alerta_form.equipe.data)
-        if not equipe:
-            flash('Equipe inválida!', 'danger')
-            return redirect(url_for('patio.alerta_viatura'))
-
-        if not equipe.viaturas:
-            flash('Nenhuma viatura está associada a esta equipe!', 'danger')
-            return redirect(url_for('patio.alerta_viatura'))
-
-        viatura = equipe.viaturas[0]  # Assume que cada equipe tem uma única viatura associada
-
         new_alerta = AlertaViatura(
-            viatura_id=viatura.id,
-            equipe_id=equipe.id,  # Definindo o equipe_id
+            viatura_id=alerta_form.viatura.data.id,
             descricao=alerta_form.descricao.data,
             prioridade=alerta_form.prioridade.data,
             status="Pendente"  # Define o status como Pendente

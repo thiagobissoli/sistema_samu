@@ -37,6 +37,8 @@
                             <tr>
                                 <th>VTR</th>
                                 <th>Placa</th>
+                                <th>Equipe</th>
+                                <th>Suporte</th>
                                 <th>Ação</th>
                             </tr>
                         </thead>
@@ -45,8 +47,11 @@
                             <tr>
                                 <td>{{ viatura.vtr }}</td>
                                 <td>{{ viatura.placa }}</td>
+                                <td>{{ viatura.equipe.equipe }}</td>
+                                <td>{{ viatura.equipe.tipo_suporte }}</td>
                                 <td>
                                     <a href="{{ url_for('viatura.edit_viatura', id=viatura.id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                    <a href="{{ url_for('viatura.edit_equipe_viatura', id=viatura.id) }}" class="btn btn-secondary btn-sm">Equipes</a>
                                     <form action="{{ url_for('viatura.delete_viatura', id=viatura.id) }}" method="post" style="display: inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir a viatura {{ viatura.vtr }}?');">
                                         <button type="submit" class="btn btn-danger btn-sm">Apagar</button>
                                     </form>
@@ -58,6 +63,8 @@
                             <tr>
                                 <th>VTR</th>
                                 <th>Placa</th>
+                                <th>Equipe</th>
+                                <th>Suporte</th>
                                 <th>Ação</th>
                             </tr>
                         </tfoot>

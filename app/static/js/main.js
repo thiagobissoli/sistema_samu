@@ -59,11 +59,9 @@ $(document).ready(function(){
             if(data.status === "success") {
                 const newValue = data.new_value;
                 if(newValue === 0) {
-                    button.removeClass('btn-danger btn-success').addClass('btn-secondary');
-                } else if(newValue === 1) {
-                    button.removeClass('btn-secondary btn-success').addClass('btn-danger');
+                    button.removeClass('btn-danger').addClass('btn-secondary');
                 } else {
-                    button.removeClass('btn-secondary btn-danger').addClass('btn-success');
+                    button.removeClass('btn-secondary').addClass('btn-danger');
                 }
             } else {
                 alert("Erro ao alternar o checkpoint!");

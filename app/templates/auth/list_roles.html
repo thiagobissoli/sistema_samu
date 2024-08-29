@@ -24,7 +24,7 @@
     <!-- Main content -->
     <section class="content">
       <div class="row">
-        <div class="col-12">
+        <div class="col-6">
 
           <div class="card">
             <div class="card-header">
@@ -36,26 +36,18 @@
                 <thead>
                     <tr>
                         <th>Perfil</th>
-                        <th>Ação</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for role in roles %}
                     <tr>
                         <td>{{ role.name }}</td>
-                        <td>
-                            <a href="{{ url_for('auth.edit_role', id=role.id) }}" class="btn btn-primary btn-sm">Editar</a>
-                            <form action="{{ url_for('auth.delete_role', id=role.id) }}" method="post" style="display: inline-block;" onsubmit="return confirm('Tem certeza que deseja excluir o perfil {{ role.name }}?');">
-                                <button type="submit" class="btn btn-danger btn-sm">Apagar</button>
-                            </form>
-                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
                 <tfoot>
                     <tr>
                         <th>Perfil</th>
-                        <th>Ação</th>
                     </tr>
                 </tfoot>
               </table>

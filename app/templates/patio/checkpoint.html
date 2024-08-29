@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %} Checkpoint {% endblock %}
+
 {% block head %}
     <meta http-equiv="refresh" content="60">
 {% endblock %}
@@ -28,6 +30,7 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th>Equipe</th>
                                 <th>Viatura</th>
                                 <th>Horário Previsto de Chegada</th>
                                 <th>Serviço Previsto</th>
@@ -36,6 +39,7 @@
                         <tbody>
                             {% for previsao in previsoes %}
                             <tr>
+                                <td>{{ previsao.viatura.equipe.equipe }}</td>
                                 <td>{{ previsao.viatura.vtr }}</td>
                                 <td>{{ previsao.hora_chegada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                 <td>
@@ -67,6 +71,7 @@
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
+                                <th>Equipe</th>
                                 <th>Viatura</th>
                                 <th>Entrada</th>
                                 <th>Tempo Estacionado</th>
@@ -76,6 +81,7 @@
                         <tbody>
                             {% for record in parked_viaturas %}
                             <tr>
+                                <td>{{ record.viatura.equipe.equipe }}</td>
                                 <td>{{ record.viatura.vtr }}</td>
                                 <td>{{ record.hora_entrada.strftime('%d/%m/%y - %H:%M:%S') }}</td>
                                 <td>{{ ((current_time - record.hora_entrada).seconds // 60) }} minutos</td>
